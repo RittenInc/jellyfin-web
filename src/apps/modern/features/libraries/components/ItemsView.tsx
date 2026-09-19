@@ -30,6 +30,11 @@ const SCROLL_TO_ITEM_SPACING = 8;
 
 /**
  * Scrolls the page so an item sits at the top of the viewport, below the fixed app bar.
+ *
+ * The jump is deliberately not animated. Card images load once they intersect the viewport and
+ * stay loaded, so animating past every row between here and the target would start downloading
+ * (and decoding a blurhash for) the whole library at once, leaving the images actually landed on
+ * stuck behind thousands of queued requests.
  */
 const scrollToItem = (element: Element) => {
     const appBarHeight = document
@@ -38,7 +43,8 @@ const scrollToItem = (element: Element) => {
     const top = element.getBoundingClientRect().top + window.scrollY
         - appBarHeight - SCROLL_TO_ITEM_SPACING;
 
-    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    // NOTE: "auto" rather than "instant" because the latter throws on older browsers
+    window.scrollTo({ top: Math.max(0, top), behavior: 'auto' });
 };
 
 const ItemsView: FC = () => {
