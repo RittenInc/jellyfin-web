@@ -44,7 +44,7 @@ const scrollToItem = (element: Element) => {
         - appBarHeight - SCROLL_TO_ITEM_SPACING;
 
     // NOTE: "auto" rather than "instant" because the latter throws on older browsers
-    window.scrollTo({ top: Math.max(0, top), behavior: 'auto' });
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
 };
 
 const ItemsView: FC = () => {
