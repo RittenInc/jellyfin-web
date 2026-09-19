@@ -29,7 +29,13 @@
       "color": "#0c2450"
     }
   ],
-  "menuLinks": [],
+  "menuLinks": [
+    {
+      "name": "Request Shows",
+      "icon": "playlist_add",
+      "url": "https://requests.ritten.ca/"
+    }
+  ],
   "servers": [],
   "plugins": [
     "playAccessValidation/plugin",
