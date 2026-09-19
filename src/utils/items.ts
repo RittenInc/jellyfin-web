@@ -86,6 +86,14 @@ export const getEpisodeFilter = (
     };
 };
 
+/**
+ * Whether the alphabet picker scrolls to a letter instead of filtering by it. Scrolling is only
+ * possible when pagination is disabled, because the whole library is loaded in one page.
+ */
+export const isAlphaPickerScrollEnabled = (libraryPageSize?: number) => (
+    !(libraryPageSize ?? userSettings.libraryPageSize(undefined))
+);
+
 const getItemFieldsEnum = (
     viewType: LibraryTab,
     libraryViewSettings: LibraryViewSettings
@@ -94,6 +102,11 @@ const getItemFieldsEnum = (
 
     if (viewType !== LibraryTab.Studios) {
         itemFields.push(ItemFields.MediaSourceCount);
+    }
+
+    if (isAlphaPickerScrollEnabled()) {
+        // Scrolling to a letter needs the sort name of every item to locate it in the list
+        itemFields.push(ItemFields.SortName);
     }
 
     if (libraryViewSettings.ImageType === ImageType.Primary) {
@@ -126,7 +139,8 @@ export const getLimitQuery = () => {
 };
 
 export const getAlphaPickerQuery = (libraryViewSettings: LibraryViewSettings) => {
-    const alphabetValue = libraryViewSettings.Alphabet !== null ?
+    // In scroll mode the picker moves the page rather than narrowing the results
+    const alphabetValue = libraryViewSettings.Alphabet !== null && !isAlphaPickerScrollEnabled() ?
         libraryViewSettings.Alphabet : undefined;
 
     return {
