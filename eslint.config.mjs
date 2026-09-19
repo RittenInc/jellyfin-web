@@ -181,6 +181,10 @@ export default tseslint.config(
             globals: {
                 ...globals.node
             }
+        },
+        rules: {
+            // These run in node, not in a browser, so the browserslist targets do not apply
+            'compat/compat': 'off'
         }
     },
 
@@ -402,6 +406,12 @@ export default tseslint.config(
             globals: {
                 ...globals.serviceworker
             }
+        },
+        rules: {
+            // This file only runs inside a service worker, and every engine that registers one
+            // also implements the Cache API, so browserslist targets that predate it never
+            // execute this code.
+            'compat/compat': 'off'
         }
     },
 

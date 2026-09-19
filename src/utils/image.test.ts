@@ -1,7 +1,9 @@
 import { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models/base-item-kind';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
-import { getItemTypeIcon, getLibraryIcon } from './image';
+import { MAX_IMAGE_SCALE } from 'constants/image';
+
+import { getImageScale, getItemTypeIcon, getLibraryIcon, scaleImageSize } from './image';
 import { CollectionType } from '@jellyfin/sdk/lib/generated-client/models/collection-type';
 
 const ITEM_ICON_MAP: Record<string, string | undefined> = {
@@ -97,5 +99,55 @@ describe('getLibraryIcon()', () => {
     it('Should return the default icon for unknown types', () => {
         expect(getLibraryIcon('foobar'))
             .toBe('folder');
+    });
+});
+
+const setDevicePixelRatio = (value: number) => {
+    Object.defineProperty(window, 'devicePixelRatio', { value, configurable: true });
+};
+
+describe('getImageScale()', () => {
+    afterEach(() => {
+        setDevicePixelRatio(1);
+    });
+
+    it('Should use the device pixel ratio when it is below the cap', () => {
+        setDevicePixelRatio(1);
+        expect(getImageScale()).toBe(1);
+        setDevicePixelRatio(1.25);
+        expect(getImageScale()).toBe(1.25);
+    });
+
+    it('Should cap the device pixel ratio of high density displays', () => {
+        setDevicePixelRatio(2);
+        expect(getImageScale()).toBe(MAX_IMAGE_SCALE);
+        setDevicePixelRatio(3);
+        expect(getImageScale()).toBe(MAX_IMAGE_SCALE);
+    });
+
+    it('Should fall back to 1 when the device pixel ratio is unusable', () => {
+        setDevicePixelRatio(0);
+        expect(getImageScale()).toBe(1);
+    });
+});
+
+describe('scaleImageSize()', () => {
+    afterEach(() => {
+        setDevicePixelRatio(1);
+    });
+
+    it('Should round up so the API accepts the dimension', () => {
+        setDevicePixelRatio(1.25);
+        expect(scaleImageSize(101)).toBe(127);
+    });
+
+    it('Should scale by no more than the cap', () => {
+        setDevicePixelRatio(3);
+        expect(scaleImageSize(200)).toBe(300);
+    });
+
+    it('Should return undefined when there is no size', () => {
+        expect(scaleImageSize(undefined)).toBeUndefined();
+        expect(scaleImageSize(0)).toBeUndefined();
     });
 });

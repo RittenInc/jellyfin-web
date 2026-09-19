@@ -6,6 +6,7 @@ import { getImageApi } from '@jellyfin/sdk/lib/utils/api/image-api';
 import globalize from 'lib/globalize';
 import type { ItemDto } from 'types/base/models/item-dto';
 import type { ListOptions } from 'types/listOptions';
+import { scaleImageSize } from 'utils/image';
 
 const sortBySortName = (item: ItemDto): string => {
     if (item.Type === BaseItemKind.Episode) {
@@ -93,8 +94,7 @@ export function getImageUrl(
 ) {
     let imgTag;
     let itemId;
-    const dpr = window.devicePixelRatio || 1;
-    const scaledSize = size ? Math.round(size * dpr) : undefined;
+    const scaledSize = scaleImageSize(size);
     const fillWidth = scaledSize;
     const fillHeight = scaledSize;
     const imgType = ImageType.Primary;
@@ -139,8 +139,7 @@ export function getChannelImageUrl(
 ) {
     let imgTag;
     let itemId;
-    const dpr = window.devicePixelRatio || 1;
-    const scaledSize = size ? Math.round(size * dpr) : undefined;
+    const scaledSize = scaleImageSize(size);
     const fillWidth = scaledSize;
     const fillHeight = scaledSize;
 

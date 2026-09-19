@@ -3,7 +3,27 @@ import { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models/base-ite
 import type { DeviceInfoDto } from '@jellyfin/sdk/lib/generated-client/models/device-info-dto';
 import type { SessionInfoDto } from '@jellyfin/sdk/lib/generated-client/models/session-info-dto';
 
+import { MAX_IMAGE_SCALE } from 'constants/image';
+
 const BASE_DEVICE_IMAGE_URL = 'assets/img/devices/';
+
+/**
+ * Gets the scale factor to apply to requested image dimensions, capped so that high density
+ * displays do not request far more detail than is visible.
+ */
+export function getImageScale() {
+    return Math.min(window?.devicePixelRatio || 1, MAX_IMAGE_SCALE);
+}
+
+/**
+ * Scales an image dimension for the current display.
+ * @param size - The size in CSS pixels.
+ * @returns The size to request from the server, or undefined if no size was given.
+ */
+export function scaleImageSize(size: number | undefined) {
+    // Dimensions must be rounded or the API will reject the request
+    return size ? Math.ceil(size * getImageScale()) : undefined;
+}
 
 // audit note: this module is expected to return safe text for use in HTML
 function getWebDeviceIcon(browser: string | null | undefined) {
@@ -162,6 +182,8 @@ export function getItemTypeIcon(itemType: BaseItemKind | string | undefined, def
 
 export default {
     getDeviceIcon,
+    getImageScale,
+    getItemTypeIcon,
     getLibraryIcon,
-    getItemTypeIcon
+    scaleImageSize
 };

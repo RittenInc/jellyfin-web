@@ -2,8 +2,10 @@ import { Api } from '@jellyfin/sdk';
 import { ImageType } from '@jellyfin/sdk/lib/generated-client/models/image-type';
 import { getImageApi } from '@jellyfin/sdk/lib/utils/api/image-api';
 
+import { IMAGE_QUALITY } from 'constants/image';
 import { ItemDto } from 'types/base/models/item-dto';
 import { CardOptions } from 'types/cardOptions';
+import { scaleImageSize } from 'utils/image';
 
 import { getDesiredAspect } from './builder';
 import { CardShape } from './shape';
@@ -155,16 +157,13 @@ export function getCardImageUrl({
             height = width / uiAspect;
         }
 
-        const dpr = window?.devicePixelRatio || 1;
-
         imgUrl = getImageApi(api).getItemImageUrlById(
             itemId,
             imgType,
             {
-                // Dimensions must be rounded or the API will reject the request
-                fillHeight: height ? Math.ceil(height * dpr) : undefined,
-                fillWidth: width ? Math.ceil(width * dpr) : undefined,
-                quality: 96,
+                fillHeight: scaleImageSize(height),
+                fillWidth: scaleImageSize(width),
+                quality: IMAGE_QUALITY,
                 tag: imgTag
             }
         );

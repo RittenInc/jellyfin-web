@@ -167,6 +167,7 @@
     "build:es-check": "npm run build:production && npm run escheck",
     "escheck": "es-check",
     "lint": "eslint",
+    "prewarm-images": "vite-node scripts/prewarm-images.ts --",
     "test": "vitest --watch=false --config vite.config.ts",
     "test:watch": "vitest --config vite.config.ts",
     "stylelint": "stylelint \"src/**/*.{css,scss}\""

@@ -2,6 +2,7 @@ import React, { type FC, useCallback, useState } from 'react';
 import { BlurhashCanvas } from 'react-blurhash';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
+import { IMAGE_LOAD_THRESHOLD } from 'constants/image';
 import * as userSettings from '../../scripts/settings/userSettings';
 
 const imageStyle: React.CSSProperties = {
@@ -63,6 +64,7 @@ const Image: FC<ImageProps> = ({
                     opacity: isLoaded ? 1 : 0,
                     transition: transitionDuration
                 }}
+                threshold={IMAGE_LOAD_THRESHOLD}
                 onLoad={handleLoad}
                 beforeLoad={handleLoadStarted}
             />
