@@ -7,6 +7,11 @@
     display: flex;
     flex-direction: column;
     align-items: initial;
+
+    /* Vertical gap between stacked cards. The channel cells subtract it from
+       their height while the program cards take it from inside a full height
+       row, so both columns stay aligned row for row. */
+    --jf-guide-cellInsetY: 2px;
 }
 
 .tvGuideHeader {
@@ -406,7 +411,7 @@
     flex: 1 1 auto;
     min-width: 0;
     box-sizing: border-box;
-    margin: 2px 3px 2px 0;
+    margin: var(--jf-guide-cellInsetY) 3px var(--jf-guide-cellInsetY) 0;
     overflow: hidden;
     border: 1px solid var(--jf-guide-cellBorder, rgba(255, 255, 255, 0.08));
     border-radius: 0.4em;
@@ -651,12 +656,12 @@
        the fixed width set on .channelsContainer */
     width: auto;
     align-self: stretch;
-    height: var(--jf-guide-rowHeight, 7em);
+    height: calc(var(--jf-guide-rowHeight, 7em) - (var(--jf-guide-cellInsetY) * 2));
     contain: strict;
     position: relative;
     border: 1px solid transparent;
     border-radius: 0.4em;
-    margin: 2px 4px 2px 0;
+    margin: var(--jf-guide-cellInsetY) 4px var(--jf-guide-cellInsetY) 0;
     background: var(--jf-guide-channelBg, rgba(255, 255, 255, 0.025));
 }
 
@@ -742,9 +747,12 @@
 /* TV layout
    ------------------------------------------------------------------------ */
 
-.channelPrograms-tv,
-.guide-channelHeaderCell-tv {
+.channelPrograms-tv {
     height: var(--jf-guide-rowHeightTv, 5.5em);
+}
+
+.guide-channelHeaderCell-tv {
+    height: calc(var(--jf-guide-rowHeightTv, 5.5em) - (var(--jf-guide-cellInsetY) * 2));
 }
 
 /* Misc
