@@ -1,0 +1,456 @@
+/* Bifrost
+   Ported from the branding stylesheet that used to be injected through the
+   server's custom CSS field. Anything the theme system already exposes is
+   expressed as a variable override in the `@use ... with` block below; only the
+   genuinely bespoke pieces — the gradient wordmark on primary actions, the
+   artwork glow and the login hero — are written out as rules.
+
+   Deliberately NOT ported: the branding sheet's entire Live TV guide section.
+   src/components/guide/guide.scss now draws the guide from the --jf-guide-*
+   custom properties, so those rules would have fought it. The guide is themed
+   by the $guide-* overrides below instead. */
+
+/* Deep space background and the surfaces that float on it */
+$bg-base: #050a12;
+$bg-paper: #0c141f;
+$surface: rgba(12, 20, 31, 0.82);
+$surface-hover: rgba(20, 31, 47, 0.92);
+
+/* The bridge — the four stops every accent in this theme is built from */
+$cyan: #55e8ff;
+$blue: #4b9cff;
+$purple: #936cff;
+$magenta: #df63dc;
+
+/* Dark ink for text sitting on top of the gradient */
+$ink: #06101b;
+
+$text-primary: #f5f8ff;
+$text-secondary: #aeb8c8;
+
+$bridge: linear-gradient(100deg, $cyan 0%, $blue 32%, $purple 67%, $magenta 100%);
+$bridge-bright: linear-gradient(100deg, #72eeff 0%, #62aaff 32%, #a27cff 67%, #e879e5 100%);
+
+/* Header sweeps from near-black blue into near-black violet */
+$header-gradient: linear-gradient(90deg, rgba(3, 9, 18, 0.98) 0%, rgba(4, 9, 20, 0.96) 55%, rgba(10, 8, 24, 0.96) 100%);
+
+/* Aurora wash sitting behind every page */
+$page-wash:
+    radial-gradient(circle at 50% -20%, rgba(75, 156, 255, 0.13), transparent 42%),
+    radial-gradient(circle at 85% 30%, rgba(147, 108, 255, 0.08), transparent 35%);
+
+/* Glow applied to hovered artwork */
+$glow: 0 0 12px rgba(85, 232, 255, 0.2), 0 0 28px rgba(147, 108, 255, 0.12);
+
+/* Import the base theme with overrides */
+@use "../_base/theme" with (
+    // Theme options
+    $dark: true,
+
+    // Color palette
+    $background-default: $bg-base,
+    $background-defaultImage: $page-wash,
+    $background-paper: $bg-paper,
+    $primary-main: $cyan,
+    $primary-dark: #2bb4cc,
+    $primary-light: #8af1ff,
+    $primary-hover: rgba(85, 232, 255, 0.2),
+    $primary-contrastText: $ink,
+    $secondary-main: $purple,
+    $secondary-contrastText: #fff,
+    $text-primary: $text-primary,
+    $text-secondary: $text-secondary,
+    $action-focus: rgba(85, 232, 255, 0.14),
+    $action-hover: rgba(85, 232, 255, 0.08),
+    $divider: rgba(85, 232, 255, 0.14),
+
+    // Components
+    $appBar-defaultBg: $bg-base,
+    $appBar-gradient: $header-gradient,
+    $appBar-transparentBg: rgba(5, 10, 18, 0.55),
+    $surface-overlay: rgba(9, 16, 26, 0.72),
+    $filledInput-bg: rgba(7, 15, 27, 0.9),
+    $filledInput-borderColor: rgba(85, 232, 255, 0.22),
+    $card-borderRadius: 0.55em,
+    $button-inheritContainedBg: $surface,
+    $button-inheritContainedHoverBg: $surface-hover,
+    $snackbarContent-bg: $bg-paper,
+    $snackbarContent-color: rgba(255, 255, 255, 0.87),
+
+    // Live TV guide — this block replaces the ~250 lines of #guideTab rules
+    // that the branding sheet carried.
+    $guide-rowBorder: rgba(85, 232, 255, 0.08),
+    $guide-cellBg: linear-gradient(135deg, rgba(18, 30, 47, 0.96) 0%, rgba(15, 23, 40, 0.96) 100%),
+    $guide-cellBorder: rgba(117, 148, 184, 0.12),
+    $guide-cellHoverBg: linear-gradient(135deg, rgba(24, 61, 82, 0.98) 0%, rgba(34, 42, 85, 0.98) 55%, rgba(60, 34, 88, 0.98) 100%),
+    $guide-channelBg: linear-gradient(90deg, rgba(7, 15, 26, 0.98) 0%, rgba(9, 19, 33, 0.98) 100%),
+    $guide-controlBg: rgba(85, 232, 255, 0.06),
+    $guide-controlBorder: rgba(85, 232, 255, 0.18),
+    $guide-liveBg: linear-gradient(135deg, rgba(20, 70, 92, 0.98) 0%, rgba(36, 58, 112, 0.98) 52%, rgba(76, 43, 113, 0.98) 100%),
+    $guide-liveBorder: rgba(85, 232, 255, 0.34),
+    $guide-liveText: #fff,
+    $guide-accent: #69e9ff,
+    $guide-accentHoverBg: rgba(85, 232, 255, 0.12),
+    $guide-nowLine: $cyan
+);
+
+/* Header
+   ------------------------------------------------------------------------ */
+
+.skinHeader-withBackground {
+    border-bottom: 1px solid rgba(85, 232, 255, 0.1);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.35);
+}
+
+/* Bifrost wordmark in place of the Jellyfin banner */
+.pageTitleWithDefaultLogo {
+    background-image: url(logo-header.svg);
+
+    .layout-tv & {
+        background-image: url(logo-header.svg);
+    }
+}
+
+/* The active tab sits on a slice of the bridge */
+.headerTabs .emby-tab-button-active {
+    position: relative;
+    color: #fff;
+}
+
+.headerTabs .emby-tab-button-active::after {
+    content: "";
+    position: absolute;
+    right: 18%;
+    bottom: 0;
+    left: 18%;
+    height: 3px;
+    border-radius: 4px;
+    background: $bridge;
+    box-shadow: 0 0 8px rgba(85, 232, 255, 0.45), 0 0 14px rgba(147, 108, 255, 0.3);
+}
+
+/* Cards
+   ------------------------------------------------------------------------ */
+
+.cardBox {
+    transition: transform 160ms ease;
+}
+
+.cardImageContainer {
+    overflow: hidden;
+    border-radius: var(--jf-card-borderRadius, 0.55em);
+    transition: box-shadow 180ms ease, border-color 180ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .cardBox:hover {
+        transform: translateY(-4px);
+    }
+
+    .cardBox:hover .cardImageContainer {
+        box-shadow: $glow;
+    }
+}
+
+/* Artwork fallbacks, which Live TV leans on heavily */
+.defaultCardBackground1,
+.defaultCardBackground2,
+.defaultCardBackground3,
+.defaultCardBackground4,
+.defaultCardBackground5 {
+    background:
+        radial-gradient(circle at 50% 45%, rgba(65, 170, 255, 0.24) 0%, rgba(83, 83, 210, 0.13) 32%, transparent 67%),
+        linear-gradient(135deg, #07111e 0%, #09182a 48%, #120d27 100%);
+    background-color: #07111e;
+}
+
+.cardImageContainer.defaultCardBackground {
+    border: 1px solid rgba(85, 232, 255, 0.18);
+}
+
+.cardImageContainer.defaultCardBackground:hover {
+    border-color: rgba(85, 232, 255, 0.55);
+}
+
+.cardImageIcon.live_tv {
+    color: #69e9ff;
+    text-shadow: 0 0 10px rgba(85, 232, 255, 0.65), 0 0 25px rgba(75, 156, 255, 0.38);
+}
+
+/* The play overlay on a hovered card */
+.cardOverlayFab-primary {
+    background: linear-gradient(135deg, $cyan 0%, $blue 45%, $purple 100%);
+    color: $ink;
+    box-shadow: 0 0 14px rgba(85, 232, 255, 0.35), 0 0 25px rgba(147, 108, 255, 0.2);
+}
+
+/* Buttons
+   ------------------------------------------------------------------------ */
+
+.raised {
+    border: 1px solid rgba(85, 232, 255, 0.16);
+    border-radius: 0.4em;
+    color: $text-primary;
+    transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+}
+
+.raised:hover {
+    border-color: rgba(85, 232, 255, 0.55);
+    box-shadow: 0 0 10px rgba(85, 232, 255, 0.16), 0 0 18px rgba(147, 108, 255, 0.1);
+}
+
+/* Primary actions ride the bridge gradient */
+.button-submit {
+    border: 0;
+    background: $bridge;
+    color: $ink;
+    font-weight: 600;
+    box-shadow: 0 0 15px rgba(85, 232, 255, 0.18), 0 0 28px rgba(147, 108, 255, 0.12);
+    transition: background 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.button-submit > span {
+    color: $ink;
+}
+
+.button-submit:hover {
+    background: $bridge-bright;
+    transform: translateY(-1px);
+    box-shadow: 0 0 20px rgba(85, 232, 255, 0.32), 0 0 35px rgba(147, 108, 255, 0.22);
+}
+
+.button-submit:active {
+    transform: none;
+    filter: brightness(0.92);
+}
+
+/* Indicators
+   ------------------------------------------------------------------------ */
+
+.itemProgressBar {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.itemProgressBarForeground {
+    background: $bridge;
+    box-shadow: 0 0 7px rgba(85, 232, 255, 0.3);
+}
+
+/* Recordings keep the error colour rather than inheriting the gradient above */
+.itemProgressBarForeground-recording {
+    background: var(--jf-palette-error-light, #d15353);
+    box-shadow: none;
+}
+
+.emby-checkbox:checked + span + .checkboxOutline {
+    border-color: rgba(85, 232, 255, 0.55);
+    background: $bridge;
+}
+
+/* Item details
+   ------------------------------------------------------------------------ */
+
+.detailPagePrimaryContainer .button-flat {
+    border-radius: 50%;
+    transition: color 150ms ease, background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+}
+
+.detailPagePrimaryContainer .button-flat:hover {
+    background: rgba(85, 232, 255, 0.09);
+    color: #69e9ff;
+    transform: translateY(-2px);
+    box-shadow: 0 0 14px rgba(85, 232, 255, 0.13), 0 0 24px rgba(147, 108, 255, 0.07);
+}
+
+/* Play and resume are the one filled control in the row */
+.detailPagePrimaryContainer .button-flat.btnPlay,
+.detailPagePrimaryContainer .button-flat.btnReplay {
+    background: $bridge;
+    color: $ink;
+    box-shadow: 0 0 15px rgba(85, 232, 255, 0.18), 0 0 28px rgba(147, 108, 255, 0.13);
+}
+
+.detailPagePrimaryContainer .button-flat.btnPlay:hover,
+.detailPagePrimaryContainer .button-flat.btnReplay:hover {
+    background: $bridge-bright;
+    color: $ink;
+    box-shadow: 0 0 20px rgba(85, 232, 255, 0.32), 0 0 36px rgba(147, 108, 255, 0.22);
+}
+
+/* Home
+   ------------------------------------------------------------------------ */
+
+#homePage .verticalSection {
+    margin-bottom: 1.35em;
+}
+
+#homePage .sectionTitleContainer {
+    margin-bottom: 0.55em;
+}
+
+#homePage .sectionTitle {
+    font-weight: 500;
+    letter-spacing: -0.015em;
+}
+
+/* Scrollbars
+   ------------------------------------------------------------------------ */
+
+* {
+    scrollbar-color: #29374b $bg-base;
+}
+
+/* stylelint-disable-next-line selector-no-vendor-prefix */
+::-webkit-scrollbar-track-piece {
+    background-color: $bg-base;
+}
+
+/* stylelint-disable-next-line selector-no-vendor-prefix */
+::-webkit-scrollbar-thumb:horizontal,
+::-webkit-scrollbar-thumb:vertical {
+    border-radius: 10px;
+    background: #29374b;
+}
+
+/* Focus
+   ------------------------------------------------------------------------ */
+
+:focus-visible {
+    outline: 2px solid $cyan;
+    outline-offset: 2px;
+}
+
+/* Login
+   ------------------------------------------------------------------------ */
+
+#loginPage {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse at 28% 42%, rgba(30, 91, 145, 0.16) 0%, rgba(15, 42, 75, 0.08) 30%, transparent 58%),
+        radial-gradient(ellipse at 55% 25%, rgba(111, 74, 190, 0.08) 0%, transparent 45%),
+        linear-gradient(110deg, #020711 0%, #040b16 48%, #050913 70%, #02060d 100%);
+}
+
+/* Hero artwork sitting behind the form */
+#loginPage::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 4vw;
+    width: 52vw;
+    height: 64vh;
+    transform: translateY(-50%);
+    background-image: url(logo-login.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    filter: drop-shadow(0 0 18px rgba(85, 232, 255, 0.1)) drop-shadow(0 0 35px rgba(147, 108, 255, 0.08));
+    pointer-events: none;
+}
+
+/* A faint scatter of stars over the whole panel */
+#loginPage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.45) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 34% 72%, rgba(85, 232, 255, 0.35) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 46% 18%, rgba(255, 255, 255, 0.25) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 63% 76%, rgba(147, 108, 255, 0.28) 0 1px, transparent 1.5px);
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+/* The hero replaces the server splash screen, and the header is noise here */
+body:has(#loginPage:not(.hide)) .backgroundContainer {
+    background: none;
+    opacity: 0;
+}
+
+body:has(#loginPage:not(.hide)) .skinHeader {
+    display: none;
+}
+
+/* Sign-in card */
+#loginPage > .padded-left {
+    position: relative;
+    z-index: 2;
+    max-width: 460px;
+    margin-top: 10vh;
+    margin-right: 5vw;
+    margin-left: auto;
+    padding: 38px 40px 42px;
+    border: 1px solid rgba(85, 232, 255, 0.18);
+    border-radius: 18px;
+    background: rgba(3, 9, 18, 0.78);
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.5),
+        0 0 35px rgba(85, 232, 255, 0.06),
+        0 0 55px rgba(147, 108, 255, 0.05);
+}
+
+@supports (backdrop-filter: blur(10px)) {
+    #loginPage > .padded-left {
+        backdrop-filter: blur(18px);
+    }
+}
+
+#loginPage .sectionTitle,
+#loginPage h1 {
+    color: #fff;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+#loginPage .emby-input {
+    border: 1px solid rgba(85, 232, 255, 0.22);
+    border-radius: 8px;
+    background: rgba(7, 15, 27, 0.92);
+    color: $text-primary;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
+    transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+#loginPage .emby-input:focus {
+    border-color: $cyan;
+    background: rgba(9, 19, 34, 0.98);
+    box-shadow: 0 0 0 1px rgba(85, 232, 255, 0.25), 0 0 16px rgba(85, 232, 255, 0.18);
+}
+
+/* Chrome paints autofilled fields with an opaque light background, which would
+   punch a hole in the glass card. Only the prefixed properties can undo it. */
+/* stylelint-disable property-no-vendor-prefix, selector-pseudo-class-no-unknown */
+#loginPage input:-webkit-autofill,
+#loginPage input:-webkit-autofill:hover,
+#loginPage input:-webkit-autofill:focus {
+    -webkit-text-fill-color: $text-primary;
+    -webkit-box-shadow: 0 0 0 1000px rgb(7, 15, 27) inset;
+    caret-color: #fff;
+}
+/* stylelint-enable property-no-vendor-prefix, selector-pseudo-class-no-unknown */
+
+/* The desktop hero does not survive phone widths — drop it and centre the card */
+@media (max-width: 43.75em) {
+    #loginPage::before {
+        display: none;
+    }
+
+    #loginPage > .padded-left {
+        width: calc(100% - 24px);
+        max-width: 440px;
+        margin: 24px auto;
+        padding: 24px 20px 28px;
+        border-radius: 16px;
+        box-sizing: border-box;
+    }
+
+    #loginPage .readOnlyContent,
+    #loginPage form {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+}
