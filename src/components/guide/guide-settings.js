@@ -50,6 +50,7 @@ function save(context) {
     }
 
     userSettings.set('guide-colorcodedbackgrounds', context.querySelector('.chkColorCodedBackgrounds').checked);
+    userSettings.set('guide-showdescription', context.querySelector('.chkShowDescription').checked);
     userSettings.set('livetv-favoritechannelsattop', context.querySelector('.chkFavoriteChannelsAtTop').checked);
 
     const sortBys = context.querySelectorAll('.chkSortOrder');
@@ -75,6 +76,7 @@ function load(context) {
     }
 
     context.querySelector('.chkColorCodedBackgrounds').checked = userSettings.get('guide-colorcodedbackgrounds') === 'true';
+    context.querySelector('.chkShowDescription').checked = userSettings.get('guide-showdescription') !== 'false';
     context.querySelector('.chkFavoriteChannelsAtTop').checked = userSettings.get('livetv-favoritechannelsattop') !== 'false';
 
     const sortByValue = userSettings.get('livetv-channelorder') || 'Number';

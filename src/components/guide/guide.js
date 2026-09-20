@@ -140,15 +140,30 @@ function Guide(options) {
 
     // 30 mins
     const cellCurationMinutes = 30;
-    const cellDurationMs = cellCurationMinutes * 60 * 1000;
     const msPerDay = 86400000;
+
+    // The timeline header is labelled once per hour
+    const headerSlotDurationMs = 60 * 60 * 1000;
 
     let currentDate;
     let currentStartIndex = 0;
     let currentChannelLimit = 0;
     let autoRefreshInterval;
+    let nowIndicatorInterval;
     let programCells;
     let lastFocusDirection;
+
+    // Data for the currently rendered day, kept so the channel search and
+    // filters can re-render without hitting the server again
+    let allChannels = [];
+    let allPrograms = [];
+    let currentGridStartMs = 0;
+    let currentRenderDate;
+    let currentRenderOptions;
+    let currentApiClient;
+    let channelSearchTerm = '';
+    let channelFilter = '';
+    let channelSearchTimeout;
 
     self.refresh = function () {
         currentDate = null;
@@ -158,9 +173,14 @@ function Guide(options) {
 
     self.pause = function () {
         stopAutoRefresh();
+        stopNowIndicatorTimer();
     };
 
     self.resume = function (refreshData) {
+        startNowIndicatorTimer();
+        updateNowIndicator();
+        updateClock();
+
         if (refreshData) {
             self.refresh();
         } else {
@@ -170,6 +190,12 @@ function Guide(options) {
 
     self.destroy = function () {
         stopAutoRefresh();
+        stopNowIndicatorTimer();
+
+        if (channelSearchTimeout) {
+            clearTimeout(channelSearchTimeout);
+            channelSearchTimeout = null;
+        }
 
         if (self._wsUnsubscribers) {
             self._wsUnsubscribers.forEach(unsub => {
@@ -197,6 +223,22 @@ function Guide(options) {
         if (autoRefreshInterval) {
             clearInterval(autoRefreshInterval);
             autoRefreshInterval = null;
+        }
+    }
+
+    function startNowIndicatorTimer() {
+        stopNowIndicatorTimer();
+
+        nowIndicatorInterval = setInterval(function () {
+            updateNowIndicator();
+            updateClock();
+        }, 30000);
+    }
+
+    function stopNowIndicatorTimer() {
+        if (nowIndicatorInterval) {
+            clearInterval(nowIndicatorInterval);
+            nowIndicatorInterval = null;
         }
     }
 
@@ -241,6 +283,7 @@ function Guide(options) {
         channelQuery.AddCurrentProgram = false;
         channelQuery.EnableUserData = false;
         channelQuery.EnableImageTypes = 'Primary';
+        channelQuery.IsFavorite = channelFilter === 'favorites' ? true : null;
 
         const categories = self.categoryOptions.categories || [];
         const displayMovieContent = !categories.length || categories.indexOf('movies') !== -1;
@@ -299,7 +342,8 @@ function Guide(options) {
             showPremiereIndicator: allowIndicators && userSettings.get('guide-indicator-premiere') !== 'false',
             showNewIndicator: allowIndicators && userSettings.get('guide-indicator-new') !== 'false',
             showRepeatIndicator: allowIndicators && userSettings.get('guide-indicator-repeat') === 'true',
-            showEpisodeTitle: !layoutManager.tv
+            showEpisodeTitle: !layoutManager.tv,
+            showDescription: userSettings.get('guide-showdescription') !== 'false'
         };
 
         apiClient.getLiveTvChannels(channelQuery).then(function (channelsResult) {
@@ -344,12 +388,16 @@ function Guide(options) {
                 EnableUserData: false
             };
 
+            if (renderOptions.showDescription) {
+                programFields.push('Overview');
+            }
+
             if (renderOptions.showHdIcon) {
                 programFields.push('IsHD');
             }
 
             if (programFields.length) {
-                programQuery.Fields = programFields.join('');
+                programQuery.Fields = programFields.join(',');
             }
 
             apiClient.getLiveTvPrograms(programQuery).then(function (programsResult) {
@@ -384,13 +432,14 @@ function Guide(options) {
 
         while (startDate.getTime() < endDateTime) {
             html += '<div class="timeslotHeader">';
-
-            html += getDisplayTime(startDate);
+            html += '<div class="timeslotHeaderDay">' + escapeHtml(datetime.toLocaleDateString(startDate, { weekday: 'short' })) + '</div>';
+            html += '<div class="timeslotHeaderTime">' + getDisplayTime(startDate) + '</div>';
             html += '</div>';
 
-            // Add 30 mins
-            startDate.setTime(startDate.getTime() + cellDurationMs);
+            startDate.setTime(startDate.getTime() + headerSlotDurationMs);
         }
+
+        html += '</div>';
 
         return html;
     }
@@ -528,6 +577,8 @@ function Guide(options) {
 
             if (now >= startDateLocalMs && now < endDateLocalMs) {
                 cssClass += ' programCell-active';
+            } else if (endDateLocalMs <= now) {
+                cssClass += ' programCell-past';
             }
 
             let timerAttributes = '';
@@ -543,11 +594,13 @@ function Guide(options) {
             html += '<button' + isAttribute + ' data-action="' + clickAction + '"' + timerAttributes + ' data-channelid="' + program.ChannelId + '" data-id="' + program.Id + '" data-serverid="' + program.ServerId + '" data-startdate="' + program.StartDate + '" data-enddate="' + program.EndDate + '" data-type="' + program.Type + '" class="' + cssClass + '" style="left:' + startPercent + '%;width:' + endPercent + '%;">';
 
             if (displayInnerContent) {
-                const guideProgramNameClass = 'guideProgramName';
+                html += '<div class="guideProgramInner">';
 
-                html += '<div class="' + guideProgramNameClass + '">';
+                html += '<div class="guideProgramName">';
 
                 html += '<div class="guide-programNameCaret hide"><span class="guideProgramNameCaretIcon material-icons keyboard_arrow_left" aria-hidden="true"></span></div>';
+
+                html += '<div class="guideProgramBody">';
 
                 html += '<div class="guideProgramNameText">' + escapeHtml(program.Name);
 
@@ -563,26 +616,37 @@ function Guide(options) {
                 }
                 html += indicatorHtml || '';
 
-                if ((program.EpisodeTitle && programOptions.showEpisodeTitle)) {
-                    html += '<div class="guideProgramSecondaryInfo">';
+                html += '</div>';
 
-                    if (program.EpisodeTitle && programOptions.showEpisodeTitle) {
-                        html += '<span class="programSecondaryTitle">' + escapeHtml(program.EpisodeTitle) + '</span>';
-                    }
-                    html += '</div>';
+                if (program.EpisodeTitle && programOptions.showEpisodeTitle) {
+                    html += '<div class="guideProgramSecondaryInfo"><span class="programSecondaryTitle">' + escapeHtml(program.EpisodeTitle) + '</span></div>';
                 }
+
+                if (program.Overview && programOptions.showDescription) {
+                    html += '<div class="guideProgramDescription">' + escapeHtml(program.Overview) + '</div>';
+                }
+
+                html += '<div class="guideProgramTime">' + getDisplayTime(program.StartDateLocal) + ' - ' + getDisplayTime(program.EndDateLocal) + '</div>';
 
                 html += '</div>';
 
+                html += '</div>';
+
+                let iconsHtml = '';
+
                 if (program.IsHD && programOptions.showHdIcon) {
                     if (layoutManager.tv) {
-                        html += '<div class="programIcon guide-programTextIcon guide-programTextIcon-tv">HD</div>';
+                        iconsHtml += '<div class="programIcon guide-programTextIcon guide-programTextIcon-tv">HD</div>';
                     } else {
-                        html += '<div class="programIcon guide-programTextIcon">HD</div>';
+                        iconsHtml += '<div class="programIcon guide-programTextIcon">HD</div>';
                     }
                 }
 
-                html += getTimerIndicator(program);
+                iconsHtml += getTimerIndicator(program);
+
+                if (iconsHtml) {
+                    html += '<div class="guideProgramIcons">' + iconsHtml + '</div>';
+                }
 
                 html += '</div>';
             }
@@ -599,7 +663,7 @@ function Guide(options) {
         let html = '';
 
         for (const channel of channels) {
-            const hasChannelImage = channel.ImageTags.Primary;
+            const hasChannelImage = channel.ImageTags?.Primary;
 
             let cssClass = 'guide-channelHeaderCell itemAction';
 
@@ -625,14 +689,12 @@ function Guide(options) {
                 });
 
                 html += '<div class="guideChannelImage lazy" data-src="' + url + '"></div>';
+            } else if (channel.Name) {
+                html += '<div class="guideChannelName">' + escapeHtml(channel.Name) + '</div>';
             }
 
             if (channel.ChannelNumber) {
-                html += '<h3 class="guideChannelNumber">' + channel.ChannelNumber + '</h3>';
-            }
-
-            if (!hasChannelImage && channel.Name) {
-                html += '<div class="guideChannelName">' + escapeHtml(channel.Name) + '</div>';
+                html += '<div class="guideChannelNumber">' + escapeHtml(String(channel.ChannelNumber)) + '</div>';
             }
 
             html += '</button>';
@@ -654,11 +716,129 @@ function Guide(options) {
             html.push(getChannelProgramsHtml(context, date, channel, programs, programOptions, listInfo));
         }
 
-        programGrid.innerHTML = html.join('');
+        programGrid.innerHTML = '<div class="programGridInner">' + html.join('') + '<div class="guideNowIndicator hide"></div></div>';
 
         programCells = programGrid.querySelectorAll('[is=emby-programcell]');
 
         updateProgramCellsOnScroll(programGrid, programCells);
+        updateNowIndicator();
+    }
+
+    function getFilteredGuideData() {
+        const query = channelSearchTerm.trim().toLowerCase();
+
+        if (!query) {
+            return { channels: allChannels, programs: allPrograms };
+        }
+
+        const channels = allChannels.filter(function (channel) {
+            return (channel.Name || '').toLowerCase().includes(query)
+                || String(channel.ChannelNumber || '').toLowerCase().includes(query);
+        });
+
+        const channelIds = new Set(channels.map(function (channel) {
+            return channel.Id;
+        }));
+
+        const programs = allPrograms.filter(function (program) {
+            return channelIds.has(program.ChannelId);
+        });
+
+        return { channels, programs };
+    }
+
+    function renderFilteredGuide() {
+        if (!currentRenderDate) {
+            return;
+        }
+
+        const context = options.element;
+        const scrollLeft = programGrid.scrollLeft;
+        const filtered = getFilteredGuideData();
+
+        renderChannelHeaders(context, filtered.channels, currentApiClient);
+        items = {};
+        renderPrograms(context, currentRenderDate, filtered.channels, filtered.programs, currentRenderOptions);
+        updateChannelCount(filtered.channels.length, allChannels.length);
+
+        programGrid.scrollLeft = scrollLeft;
+    }
+
+    function updateCategorySelect() {
+        const select = options.element.querySelector('.guideCategorySelect');
+
+        if (!select) {
+            return;
+        }
+
+        const categories = (self.categoryOptions.categories || []).filter(function (category) {
+            return category !== 'all';
+        });
+
+        select.value = categories.length === 1 ? categories[0] : '';
+    }
+
+    function updateChannelCount(visibleCount, totalCount) {
+        const elem = options.element.querySelector('.guideChannelCount');
+
+        if (!elem) {
+            return;
+        }
+
+        const count = visibleCount === totalCount ? visibleCount : visibleCount + ' / ' + totalCount;
+        elem.textContent = count + ' ' + globalize.translate('Channels');
+    }
+
+    function updateClock() {
+        const elem = options.element.querySelector('.guideNowTime');
+
+        if (!elem) {
+            return;
+        }
+
+        const now = new Date();
+
+        elem.textContent = datetime.toLocaleDateString(now, {
+            weekday: 'long',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        }) + ' \u2022 ' + getDisplayTime(now);
+    }
+
+    function updateNowIndicator() {
+        const indicator = options.element.querySelector('.guideNowIndicator');
+
+        if (!indicator) {
+            return;
+        }
+
+        const offset = new Date().getTime() - currentGridStartMs;
+
+        if (!currentGridStartMs || offset < 0 || offset > msPerDay) {
+            indicator.classList.add('hide');
+            return;
+        }
+
+        indicator.classList.remove('hide');
+        indicator.style.left = ((offset / msPerDay) * 100) + '%';
+    }
+
+    function scrollToNow() {
+        if (!currentGridStartMs) {
+            return;
+        }
+
+        const offset = new Date().getTime() - currentGridStartMs;
+
+        if (offset < 0 || offset > msPerDay) {
+            return;
+        }
+
+        // Leave a small margin so the current program is not flush against the channel column
+        const pct = Math.max(offset - (10 * 60 * 1000), 0) / msPerDay;
+
+        nativeScrollTo(programGrid, pct * programGrid.scrollWidth, true);
     }
 
     function getProgramSortOrder(program, channels) {
@@ -691,13 +871,25 @@ function Guide(options) {
             channelRowId = channelRowId?.getAttribute ? channelRowId.getAttribute('data-channelid') : null;
         }
 
-        renderChannelHeaders(context, channels, apiClient);
+        allChannels = channels;
+        allPrograms = programs;
+        currentGridStartMs = date.getTime();
+        currentRenderDate = date;
+        currentRenderOptions = renderOptions;
+        currentApiClient = apiClient;
+
+        const filtered = getFilteredGuideData();
+
+        renderChannelHeaders(context, filtered.channels, apiClient);
 
         const startDate = date;
         const endDate = new Date(startDate.getTime() + msPerDay);
         context.querySelector('.timeslotHeaders').innerHTML = getTimeslotHeadersHtml(startDate, endDate);
         items = {};
-        renderPrograms(context, date, channels, programs, renderOptions);
+        renderPrograms(context, date, filtered.channels, filtered.programs, renderOptions);
+        updateChannelCount(filtered.channels.length, channels.length);
+        updateClock();
+        updateCategorySelect();
 
         if (guideOptions.focusProgramOnRender) {
             focusProgram(context, itemId, channelRowId, guideOptions.focusToTimeMs, guideOptions.startTimeOfDayMs);
@@ -888,6 +1080,16 @@ function Guide(options) {
         });
     }
 
+    function getSiblingChannelRow(row, forward) {
+        let sibling = forward ? row.nextElementSibling : row.previousElementSibling;
+
+        while (sibling && !sibling.classList.contains('channelPrograms')) {
+            sibling = forward ? sibling.nextElementSibling : sibling.previousElementSibling;
+        }
+
+        return sibling;
+    }
+
     function getChannelProgramsFocusableElements(container) {
         const elements = container.querySelectorAll('.programCell');
 
@@ -924,7 +1126,7 @@ function Guide(options) {
                     container = programGrid;
                     channelPrograms = dom.parentWithClass(programCell, 'channelPrograms');
 
-                    newRow = channelPrograms.previousSibling;
+                    newRow = getSiblingChannelRow(channelPrograms, false);
                     if (newRow) {
                         focusableElements = getChannelProgramsFocusableElements(newRow);
                         if (focusableElements.length) {
@@ -950,7 +1152,7 @@ function Guide(options) {
                     container = programGrid;
                     channelPrograms = dom.parentWithClass(programCell, 'channelPrograms');
 
-                    newRow = channelPrograms.nextSibling;
+                    newRow = getSiblingChannelRow(channelPrograms, true);
                     if (newRow) {
                         focusableElements = getChannelProgramsFocusableElements(newRow);
                         if (focusableElements.length) {
@@ -1056,7 +1258,8 @@ function Guide(options) {
         for (const cell of cells) {
             const icon = cell.querySelector('.timerIcon');
             if (!icon) {
-                cell.querySelector('.guideProgramName').insertAdjacentHTML('beforeend', '<span class="timerIcon material-icons programIcon fiber_manual_record"></span>');
+                const iconContainer = cell.querySelector('.guideProgramIcons');
+                iconContainer?.insertAdjacentHTML('beforeend', '<span class="timerIcon material-icons programIcon fiber_manual_record"></span>');
             }
 
             if (newTimerId) {
@@ -1151,6 +1354,52 @@ function Guide(options) {
         showViewSettings(self);
         restartAutoRefresh();
     });
+
+    const channelSearchInput = guideContext.querySelector('.guideChannelSearchInput');
+    const btnClearChannelSearch = guideContext.querySelector('.btnClearChannelSearch');
+
+    function onChannelSearchChanged() {
+        btnClearChannelSearch.classList.toggle('hide', !channelSearchInput.value);
+
+        if (channelSearchTimeout) {
+            clearTimeout(channelSearchTimeout);
+        }
+
+        channelSearchTimeout = setTimeout(function () {
+            channelSearchTimeout = null;
+
+            if (channelSearchTerm === channelSearchInput.value) {
+                return;
+            }
+
+            channelSearchTerm = channelSearchInput.value;
+            renderFilteredGuide();
+        }, 250);
+    }
+
+    channelSearchInput.addEventListener('input', onChannelSearchChanged);
+
+    btnClearChannelSearch.addEventListener('click', function () {
+        channelSearchInput.value = '';
+        onChannelSearchChanged();
+        channelSearchInput.focus();
+    });
+
+    guideContext.querySelector('.guideCategorySelect').addEventListener('change', function () {
+        // An empty value means every category, which the rest of the guide represents as an empty list
+        self.categoryOptions = { categories: this.value ? [this.value, 'all'] : [] };
+        self.refresh();
+    });
+
+    guideContext.querySelector('.guideChannelFilterSelect').addEventListener('change', function () {
+        channelFilter = this.value;
+        self.refresh();
+    });
+
+    guideContext.querySelector('.btnGuideJumpToNow').addEventListener('click', scrollToNow);
+
+    updateClock();
+    startNowIndicatorTimer();
 
     guideContext.querySelector('.guideDateTabs').addEventListener('tabchange', function (e) {
         const allTabButtons = e.target.querySelectorAll('.guide-date-tab-button');

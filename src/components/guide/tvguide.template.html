@@ -1,5 +1,44 @@
 <div class="tvGuideHeader">
 
+    <div class="guideToolbar">
+        <div class="guideToolbarSearch">
+            <span class="material-icons guideToolbarSearchIcon search" aria-hidden="true"></span>
+            <input type="text" class="guideChannelSearchInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="${SearchChannels}" aria-label="${SearchChannels}" />
+            <button is="paper-icon-button-light" type="button" class="btnClearChannelSearch hide" title="${Reset}">
+                <span class="material-icons close" aria-hidden="true"></span>
+            </button>
+        </div>
+
+        <select class="guideToolbarSelect guideCategorySelect" aria-label="${Categories}">
+            <option value="">${AllCategories}</option>
+            <option value="movies">${Movies}</option>
+            <option value="series">${Shows}</option>
+            <option value="sports">${Sports}</option>
+            <option value="kids">${Kids}</option>
+            <option value="news">${News}</option>
+        </select>
+
+        <select class="guideToolbarSelect guideChannelFilterSelect" aria-label="${Channels}">
+            <option value="">${AllChannels}</option>
+            <option value="favorites">${Favorites}</option>
+        </select>
+
+        <a href="#/livetv?tab=5" class="guideToolbarLink guideSeriesRulesButton">
+            <span class="material-icons guideToolbarLinkIcon fiber_smart_record" aria-hidden="true"></span>
+            <span>${Series}</span>
+        </a>
+
+        <div class="guideChannelCount"></div>
+
+        <div class="guideToolbarSpacer"></div>
+
+        <div class="guideNowTime"></div>
+
+        <button is="paper-icon-button-light" type="button" class="btnGuideJumpToNow" title="${HeaderOnNow}">
+            <span class="material-icons schedule" aria-hidden="true"></span>
+        </button>
+    </div>
+
     <div class="guideHeaderDateSelection">
         <div is="emby-tabs" class="guideDateTabs focuscontainer-x" data-selectionbar="false">
             <div class="emby-tabs-slider guideDateTabsSlider">

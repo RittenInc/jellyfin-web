@@ -57,7 +57,16 @@ $header-gradient: linear-gradient(to right, #000420 0%, $footer-blue 18%, #2b052
     $button-inheritContainedBg: $surface,
     $button-inheritContainedHoverBg: $teal-bright,
     $snackbarContent-bg: #303030,
-    $snackbarContent-color: rgba(255, 255, 255, 0.87)
+    $snackbarContent-color: rgba(255, 255, 255, 0.87),
+
+    // Live TV guide
+    $guide-cellBg: rgba(255, 255, 255, 0.05),
+    $guide-cellBorder: rgba(255, 255, 255, 0.1),
+    $guide-liveBg: linear-gradient(100deg, #10485a 0%, #16697f 55%, #1f8ba1 100%),
+    $guide-liveBorder: rgba(12, 232, 214, 0.45),
+    $guide-accent: $teal-bright,
+    $guide-accentHoverBg: rgba(12, 232, 214, 0.15),
+    $guide-nowLine: $teal-bright
 );
 
 /* Adjust background position for portrait orientation */
@@ -207,10 +216,6 @@ progress::-webkit-progress-value {
 /* Guide date tab — dimmed by default */
 .guide-date-tab-button {
     color: rgba(255, 255, 255, 0.3);
-}
-
-.programCell-active {
-    background: rgba(0, 0, 0, 0.4) !important;
 }
 
 /* Select element uses a narrower border than base inputs */

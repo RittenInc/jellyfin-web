@@ -53,12 +53,47 @@ $surface-overlay: $background-paper !default;
 // Set to a CSS gradient value to enable; leave as none to use only the solid colour.
 $appBar-gradient: none !default;
 
+// Live TV guide. Exposed as --jf-guide-* so src/components/guide/guide.scss can
+// consume them without every theme having to restate the guide rules.
+$guide-rowHeight: 7em !default;
+$guide-rowHeightTv: 5.5em !default;
+$guide-rowBorder: rgba(255, 255, 255, 0.08) !default;
+$guide-cellBg: rgba(255, 255, 255, 0.045) !default;
+$guide-cellBorder: rgba(255, 255, 255, 0.08) !default;
+$guide-cellHoverBg: rgba(255, 255, 255, 0.1) !default;
+$guide-channelBg: rgba(255, 255, 255, 0.025) !default;
+$guide-controlBg: rgba(255, 255, 255, 0.05) !default;
+$guide-controlBorder: rgba(255, 255, 255, 0.12) !default;
+// Currently airing programs
+$guide-liveBg: linear-gradient(100deg, #2b5a48 0%, #3d7a61 55%, #55987b 100%) !default;
+$guide-liveBorder: rgba(126, 214, 173, 0.45) !default;
+$guide-liveText: #fff !default;
+$guide-accent: #4e9d7c !default;
+$guide-accentHoverBg: rgba(78, 157, 124, 0.15) !default;
+// Vertical "now" line across the grid
+$guide-nowLine: #22d3ee !default;
+
 // Assign custom css variables not part of the MUI theme palette
 :root {
     --jf-palette-background-defaultImage: #{$background-defaultImage};
     --jf-palette-AppBar-transparentBg: #{$appBar-transparentBg};
     --jf-palette-AppBar-gradient: #{$appBar-gradient};
     --jf-card-borderRadius: #{$card-borderRadius};
+    --jf-guide-rowHeight: #{$guide-rowHeight};
+    --jf-guide-rowHeightTv: #{$guide-rowHeightTv};
+    --jf-guide-rowBorder: #{$guide-rowBorder};
+    --jf-guide-cellBg: #{$guide-cellBg};
+    --jf-guide-cellBorder: #{$guide-cellBorder};
+    --jf-guide-cellHoverBg: #{$guide-cellHoverBg};
+    --jf-guide-channelBg: #{$guide-channelBg};
+    --jf-guide-controlBg: #{$guide-controlBg};
+    --jf-guide-controlBorder: #{$guide-controlBorder};
+    --jf-guide-liveBg: #{$guide-liveBg};
+    --jf-guide-liveBorder: #{$guide-liveBorder};
+    --jf-guide-liveText: #{$guide-liveText};
+    --jf-guide-accent: #{$guide-accent};
+    --jf-guide-accentHoverBg: #{$guide-accentHoverBg};
+    --jf-guide-nowLine: #{$guide-nowLine};
 }
 
 * {
@@ -494,38 +529,6 @@ a[data-role="button"],
 .emby-tab-button.show-focus:focus,
 .emby-tab-button:hover {
     color: var(--jf-palette-secondary-main, $secondary-main);
-}
-
-.channelPrograms,
-.guide-channelHeaderCell,
-.programCell {
-    border-color: rgba(255, 255, 255, 0.05);
-}
-
-.programCell-sports {
-    background: #3949ab !important;
-}
-
-.programCell-movie {
-    background: #5e35b1 !important;
-}
-
-.programCell-kids {
-    background: #039be5 !important;
-}
-
-.programCell-news {
-    background: #43a047 !important;
-}
-
-.programCell-active {
-    background: #1e1e1e !important;
-}
-
-.guide-channelHeaderCell:focus,
-.programCell:focus {
-    background-color: var(--jf-palette-primary-main, $primary-main) !important;
-    color: var(--jf-palette-primary-contrastText, $primary-contrastText) !important;
 }
 
 .guide-programTextIcon {

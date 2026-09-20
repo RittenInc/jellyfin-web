@@ -32,7 +32,21 @@ $header-gradient: linear-gradient(to right, #bcbcbc, #a7b4b7, #beb5a5, #adbec2, 
     $snackbarContent-bg: #303030,
     $snackbarContent-color: rgba(255, 255, 255, 0.87),
     // Card border radius
-    $card-borderRadius: 0.5rem
+    $card-borderRadius: 0.5rem,
+    // Live TV guide
+    $guide-rowBorder: rgba(0, 0, 0, 0.12),
+    $guide-cellBg: rgba(0, 0, 0, 0.04),
+    $guide-cellBorder: rgba(0, 0, 0, 0.12),
+    $guide-cellHoverBg: rgba(0, 0, 0, 0.09),
+    $guide-channelBg: rgba(0, 0, 0, 0.03),
+    $guide-controlBg: rgba(0, 0, 0, 0.05),
+    $guide-controlBorder: rgba(0, 0, 0, 0.18),
+    $guide-liveBg: linear-gradient(100deg, #cfe9dc 0%, #b2ddc6 55%, #97d0b3 100%),
+    $guide-liveBorder: rgba(35, 105, 76, 0.4),
+    $guide-liveText: #10281f,
+    $guide-accent: #2f7d5c,
+    $guide-accentHoverBg: rgba(47, 125, 92, 0.12),
+    $guide-nowLine: #0a7f94
 );
 
 /* Override alpha picker selected colors */
@@ -125,15 +139,4 @@ $header-gradient: linear-gradient(to right, #bcbcbc, #a7b4b7, #beb5a5, #adbec2, 
 /* Shaded rows on the detail table */
 .detailTableBodyRow-shaded:nth-child(even) {
     background: rgba(0, 0, 0, 0.1);
-}
-
-/* Live TV guide */
-.channelPrograms,
-.guide-channelHeaderCell,
-.programCell {
-    border-color: rgba(0, 0, 0, 0.12);
-}
-
-.programCell-active {
-    background: rgba(0, 0, 0, 0.1) !important;
 }

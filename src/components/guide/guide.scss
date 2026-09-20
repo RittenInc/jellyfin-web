@@ -1,3 +1,8 @@
+/* Live TV guide
+   Colours are supplied by the active theme through the --jf-guide-* custom
+   properties (see src/themes/_base/_theme.scss); the fallbacks here keep the
+   guide usable if a custom theme does not define them. */
+
 .tvguide {
     display: flex;
     flex-direction: column;
@@ -17,14 +22,260 @@
     margin-bottom: 0.5em;
 }
 
+/* Toolbar
+   ------------------------------------------------------------------------ */
+
+.guideToolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    padding: 0.5em 0.6em;
+}
+
+.layout-tv .guideToolbar {
+    display: none;
+}
+
+.guideToolbarSpacer {
+    flex-grow: 1;
+}
+
+.guideToolbarSearch {
+    display: flex;
+    align-items: center;
+    flex-shrink: 1;
+    min-width: 8em;
+    max-width: 22em;
+    flex-grow: 1;
+    height: 2.4em;
+    box-sizing: border-box;
+    padding: 0 0.3em 0 0.6em;
+    border-radius: 0.4em;
+    border: 1px solid var(--jf-guide-controlBorder, rgba(255, 255, 255, 0.12));
+    background: var(--jf-guide-controlBg, rgba(255, 255, 255, 0.05));
+}
+
+.guideToolbarSearchIcon {
+    font-size: 1.2em !important;
+    opacity: 0.5;
+    flex-shrink: 0;
+}
+
+.guideChannelSearchInput {
+    flex-grow: 1;
+    min-width: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0 0.5em;
+}
+
+.guideChannelSearchInput::placeholder {
+    color: inherit;
+    opacity: 0.45;
+}
+
+.btnClearChannelSearch {
+    margin: 0 !important;
+    padding: 0.2em !important;
+    flex-shrink: 0;
+}
+
+.btnClearChannelSearch .material-icons {
+    font-size: 1.1em !important;
+}
+
+.guideToolbarSelect {
+    height: 2.4em;
+    box-sizing: border-box;
+    padding: 0 0.7em;
+    border-radius: 0.4em;
+    border: 1px solid var(--jf-guide-controlBorder, rgba(255, 255, 255, 0.12));
+    background: var(--jf-guide-controlBg, rgba(255, 255, 255, 0.05));
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    outline: none;
+    min-width: 0;
+    max-width: 12em;
+}
+
+.guideToolbarSelect option {
+    color: initial;
+}
+
+.guideToolbarLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    height: 2.4em;
+    box-sizing: border-box;
+    padding: 0 0.8em;
+    border-radius: 0.4em;
+    border: 1px solid var(--jf-guide-accent, #4e9d7c);
+    color: var(--jf-guide-accent, #4e9d7c);
+    text-decoration: none;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.guideToolbarLink:hover,
+.guideToolbarLink:focus {
+    background: var(--jf-guide-accentHoverBg, rgba(78, 157, 124, 0.15));
+    text-decoration: none;
+}
+
+.guideToolbarLinkIcon {
+    font-size: 1.1em !important;
+}
+
+.guideChannelCount,
+.guideNowTime {
+    opacity: 0.6;
+    font-size: 0.92em;
+    flex-shrink: 0;
+}
+
+.btnGuideJumpToNow {
+    margin: 0 !important;
+    flex-shrink: 0;
+    color: var(--jf-guide-nowLine, #22d3ee);
+}
+
+@media all and (max-width: 50em) {
+    .guideNowTime,
+    .guideChannelCount {
+        display: none;
+    }
+
+    .guideToolbarLink span:not(.material-icons) {
+        display: none;
+    }
+
+    /* Give the search its own row so the filters below always fit */
+    .guideToolbarSearch {
+        flex-basis: 100%;
+        max-width: none;
+    }
+
+    .guideToolbarSelect {
+        flex: 1 1 0;
+    }
+}
+
+/* Date tabs
+   ------------------------------------------------------------------------ */
+
 .guideHeaderDateSelection {
     font-size: 86%;
-    padding: 0.4em 0;
+    padding: 0.2em 0 0.4em;
 }
+
+.guideDateTabsSlider {
+    text-align: center;
+}
+
+.guide-date-tab-button {
+    padding: 0.3em 0.9em !important;
+    margin: 0 0.2em !important;
+    font-weight: normal;
+    border-radius: 0.4em !important;
+}
+
+.guide-date-tab-button.emby-tab-button-active {
+    border-color: transparent !important;
+    background: var(--jf-guide-controlBg, rgba(255, 255, 255, 0.05));
+}
+
+.guide-date-tab-button.show-focus:focus {
+    border-radius: 0.4em !important;
+    transform: none !important;
+}
+
+/* Timeline header
+   ------------------------------------------------------------------------ */
 
 .guide-headerTimeslots {
     display: flex;
 }
+
+.timeslotHeaders {
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.timeslotHeadersInner {
+    position: relative;
+}
+
+.timeslotHeader {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+    padding-left: 0.5em;
+    height: 3.1em;
+    vertical-align: top;
+
+    /* One cell per hour of the 24 hour grid */
+    width: 4.1666666667%;
+    border-left: 1px solid var(--jf-guide-rowBorder, rgba(255, 255, 255, 0.08));
+
+    /* Quarter hour tick marks */
+    background-image:
+        linear-gradient(
+            to right,
+            transparent 0,
+            transparent calc(25% - 1px),
+            var(--jf-guide-rowBorder, rgba(255, 255, 255, 0.08)) calc(25% - 1px),
+            var(--jf-guide-rowBorder, rgba(255, 255, 255, 0.08)) 25%,
+            transparent 25%,
+            transparent calc(50% - 1px),
+            var(--jf-guide-rowBorder, rgba(255, 255, 255, 0.08)) calc(50% - 1px),
+            var(--jf-guide-rowBorder, rgba(255, 255, 255, 0.08)) 50%,
+            transparent 50%,
+            transparent calc(75% - 1px),
+            var(--jf-guide-rowBorder, rgba(255, 255, 255, 0.08)) calc(75% - 1px),
+            var(--jf-guide-rowBorder, rgba(255, 255, 255, 0.08)) 75%,
+            transparent 75%
+        );
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    background-size: 100% 0.5em;
+}
+
+.timeslotHeaderDay {
+    font-size: 0.72em;
+    font-weight: normal;
+    opacity: 0.5;
+    line-height: 1.2;
+}
+
+.timeslotHeaderTime {
+    font-size: 0.95em;
+    line-height: 1.2;
+}
+
+.guide-channelTimeslotHeader {
+    border: 0 !important;
+    border-right-color: transparent;
+    flex-shrink: 0;
+    justify-content: center;
+    height: 3.1em;
+}
+
+.guide-channelTimeslotHeader,
+.timeslotHeader {
+    background-color: transparent !important;
+}
+
+/* Grid
+   ------------------------------------------------------------------------ */
 
 .tvProgramSectionHeader {
     margin: 0;
@@ -35,32 +286,6 @@
     text-decoration: none;
     white-space: nowrap;
     position: relative;
-}
-
-.guideProgramIndicator {
-    text-transform: uppercase;
-    border-radius: 0.25em;
-    margin-right: 0.5em;
-    font-size: 82%;
-    padding: 0.2em 0.25em;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    margin-left: 1em;
-}
-
-.guide-channelTimeslotHeader {
-    border: 0 !important;
-    border-right-color: transparent;
-    flex-shrink: 0;
-    justify-content: center;
-}
-
-.timeslotHeaders {
-    white-space: nowrap;
-    font-weight: 500;
-    font-size: 120%;
 }
 
 .programContainer {
@@ -74,20 +299,53 @@
     margin: 0;
 }
 
+.programGrid {
+    padding-bottom: 4px;
+    flex-grow: 1;
+}
+
+.programGridInner {
+    position: relative;
+}
+
 .channelPrograms {
-    height: 4.42em;
+    height: var(--jf-guide-rowHeight, 7em);
     contain: strict;
     display: flex;
     flex-direction: column;
-    border-style: solid;
-    border-width: 1px 0 1px 0;
     white-space: nowrap;
     position: relative;
     box-sizing: border-box;
 }
 
-.timeslotHeadersInner {
-    position: relative;
+.channelPrograms,
+.timeslotHeadersInner,
+.programGridInner {
+    width: 1800vw;
+}
+
+@media all and (min-width: 37.5em) {
+    .channelPrograms,
+    .timeslotHeadersInner,
+    .programGridInner {
+        width: 1400vw;
+    }
+}
+
+@media all and (min-width: 50em) {
+    .channelPrograms,
+    .timeslotHeadersInner,
+    .programGridInner {
+        width: 1200vw;
+    }
+}
+
+@media all and (min-width: 80em) {
+    .channelPrograms,
+    .timeslotHeadersInner,
+    .programGridInner {
+        width: 810vw;
+    }
 }
 
 .guideSpacer {
@@ -95,42 +353,272 @@
     flex-shrink: 0;
 }
 
-.channelPrograms,
-.timeslotHeadersInner {
-    width: 1800vw;
+/* Now indicator
+   ------------------------------------------------------------------------ */
+
+.guideNowIndicator {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    margin-left: -1px;
+    background: var(--jf-guide-nowLine, #22d3ee);
+    pointer-events: none;
+    z-index: 1;
 }
 
-@media all and (min-width: 37.5em) {
-    .channelPrograms,
-    .timeslotHeadersInner {
-        width: 1400vw;
-    }
-}
-
-@media all and (min-width: 50em) {
-    .channelPrograms,
-    .timeslotHeadersInner {
-        width: 1200vw;
-    }
-}
-
-@media all and (min-width: 80em) {
-    .channelPrograms,
-    .timeslotHeadersInner {
-        width: 810vw;
-    }
-}
-
-.timeslotHeader {
-    display: inline-flex;
-    align-items: center;
-    text-indent: 0.25em;
-    width: 2.0833333333333333333333333333333%;
-}
+/* Program cells
+   ------------------------------------------------------------------------ */
 
 .programCell,
 .guide-channelHeaderCell {
     outline: none !important;
+}
+
+.programCell {
+    color: inherit;
+    background: transparent;
+    border: 0;
+    padding: 0 !important;
+    cursor: pointer;
+    width: 100%;
+    vertical-align: middle;
+    font-family: inherit;
+    font-size: inherit;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    text-decoration: none;
+    overflow: hidden;
+    align-items: stretch;
+
+    /* Needed for Firefox */
+    text-align: left;
+    contain: strict;
+    flex-grow: 1;
+    margin: 0 !important;
+}
+
+.guideProgramInner {
+    display: flex;
+    align-items: stretch;
+    flex: 1 1 auto;
+    min-width: 0;
+    box-sizing: border-box;
+    margin: 2px 3px 2px 0;
+    overflow: hidden;
+    border: 1px solid var(--jf-guide-cellBorder, rgba(255, 255, 255, 0.08));
+    border-radius: 0.4em;
+    background: var(--jf-guide-cellBg, rgba(255, 255, 255, 0.045));
+    position: relative;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .programCell:hover .guideProgramInner {
+        background: var(--jf-guide-cellHoverBg, rgba(255, 255, 255, 0.1));
+    }
+}
+
+.programCell-past .guideProgramInner {
+    opacity: 0.55;
+}
+
+.programCell-active .guideProgramInner {
+    background: var(--jf-guide-liveBg, linear-gradient(100deg, #2b5a48 0%, #3d7a61 55%, #55987b 100%));
+    border-color: var(--jf-guide-liveBorder, rgba(126, 214, 173, 0.45));
+    color: var(--jf-guide-liveText, #fff);
+}
+
+.programCell-sports .guideProgramInner {
+    background: #3949ab;
+}
+
+.programCell-movie .guideProgramInner {
+    background: #5e35b1;
+}
+
+.programCell-kids .guideProgramInner {
+    background: #039be5;
+}
+
+.programCell-news .guideProgramInner {
+    background: #43a047;
+}
+
+.programCell:focus .guideProgramInner {
+    background: var(--jf-palette-primary-main, #00a4dc);
+    border-color: var(--jf-palette-primary-main, #00a4dc);
+    color: var(--jf-palette-primary-contrastText, rgba(0, 0, 0, 0.87));
+    opacity: 1;
+}
+
+.guideProgramName {
+    display: flex;
+    align-items: stretch;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    padding: 0.55em 0.75em;
+    box-sizing: border-box;
+    position: relative;
+    contain: layout style paint;
+}
+
+.guide-programNameCaret {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 150%;
+    flex-shrink: 0;
+}
+
+.guideProgramBody {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+
+.guideProgramNameText {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1em;
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.guideProgramSecondaryInfo {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.programSecondaryTitle {
+    font-size: 0.85em;
+    line-height: 1.3;
+    opacity: 0.85;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.guideProgramDescription {
+    font-size: 0.85em;
+    line-height: 1.3;
+    opacity: 0.7;
+    white-space: normal;
+    overflow: hidden;
+    flex: 0 1 auto;
+    min-height: 0;
+    margin-top: 0.1em;
+
+    /* Two lines at most so the airtime below always stays in view */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.guideProgramTime {
+    font-size: 0.82em;
+    line-height: 1.3;
+    opacity: 0.75;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 0.3em;
+}
+
+.guideProgramIcons {
+    display: flex;
+    align-items: flex-start;
+    flex-shrink: 0;
+    padding: 0.4em 0.4em 0 0;
+}
+
+.guideProgramIndicator {
+    text-transform: uppercase;
+    border-radius: 0.25em;
+    font-size: 72%;
+    padding: 0.15em 0.35em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    vertical-align: middle;
+    margin-left: 0.5em;
+}
+
+.programIcon {
+    height: 1em;
+    width: 1em;
+    font-size: 1.4em;
+    color: #ddd;
+    flex-shrink: 0;
+    flex-grow: 0;
+
+    [dir="ltr"] & {
+        margin-left: 0.3em;
+    }
+
+    [dir="rtl"] & {
+        margin-right: 0.3em;
+    }
+}
+
+.guide-programTextIcon {
+    font-weight: bold;
+    font-size: 0.72em;
+    padding: 0.16em 0.3em;
+    border-radius: 0.25em;
+    width: auto;
+    height: auto;
+}
+
+.guide-programTextIcon-tv {
+    font-size: 0.7em;
+}
+
+.timerIcon,
+.seriesTimerIcon {
+    color: #c33 !important;
+}
+
+.seriesTimerIcon-inactive {
+    color: inherit !important;
+    opacity: 0.7;
+}
+
+@media all and (max-width: 50em) {
+    .newTvProgram,
+    .liveTvProgram,
+    .premiereTvProgram,
+    .guideHdIcon {
+        display: none;
+    }
+
+    .guideProgramDescription {
+        display: none;
+    }
+}
+
+/* Channel column
+   ------------------------------------------------------------------------ */
+
+.channelsContainer {
+    display: flex;
+    flex-shrink: 0;
+    flex-direction: column;
+}
+
+.channelsContainer,
+.programGrid {
+    contain: layout style paint;
 }
 
 .guide-channelHeaderCell,
@@ -144,7 +632,7 @@
     font-size: inherit;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin: 0 1px 0 0;
+    margin: 0;
     display: flex;
     align-items: center;
     text-decoration: none;
@@ -153,18 +641,73 @@
     text-align: left;
     contain: strict;
     flex-shrink: 0;
-    border-radius: 0.12em;
     color: inherit;
 }
 
 .guide-channelHeaderCell {
-    border-width: 1px 1px 1px 0;
-    border-style: solid;
-    width: 100%;
-    height: 4.42em;
+    box-sizing: border-box;
+
+    /* Let the flex column stretch the cell so the margins below stay inside
+       the fixed width set on .channelsContainer */
+    width: auto;
+    align-self: stretch;
+    height: var(--jf-guide-rowHeight, 7em);
     contain: strict;
     position: relative;
-    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 0.4em;
+    margin: 2px 4px 2px 0;
+    background: var(--jf-guide-channelBg, rgba(255, 255, 255, 0.025));
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .guide-channelHeaderCell:hover {
+        background: var(--jf-guide-cellHoverBg, rgba(255, 255, 255, 0.1));
+    }
+}
+
+.guide-channelHeaderCell:focus {
+    background-color: var(--jf-palette-primary-main, #00a4dc) !important;
+    color: var(--jf-palette-primary-contrastText, rgba(0, 0, 0, 0.87)) !important;
+}
+
+.guideChannelImage {
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    top: 14%;
+    bottom: 22%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.guideChannelName {
+    position: absolute;
+    left: 0.6em;
+    right: 0.6em;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+    font-weight: 500;
+    font-size: 0.95em;
+    line-height: 1.2;
+    white-space: normal;
+    overflow: hidden;
+    max-height: 3.6em;
+}
+
+.guideChannelNumber {
+    position: absolute;
+    right: 0.5em;
+    bottom: 0.25em;
+    margin: 0;
+    font-size: 0.75em;
+    font-weight: normal;
+    opacity: 0.55;
+    max-width: 60%;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 /* Important - have to put the fixed width on channelsContainer, not the individual channelHeaderCell
@@ -182,13 +725,6 @@
     }
 }
 
-@media all and (min-width: 37.5em) {
-    .channelsContainer,
-    .guide-channelTimeslotHeader {
-        width: 16vw;
-    }
-}
-
 @media all and (min-width: 50em) {
     .channelsContainer,
     .guide-channelTimeslotHeader {
@@ -199,9 +735,20 @@
 @media all and (min-width: 80em) {
     .channelsContainer,
     .guide-channelTimeslotHeader {
-        width: 12vw;
+        width: 11vw;
     }
 }
+
+/* TV layout
+   ------------------------------------------------------------------------ */
+
+.channelPrograms-tv,
+.guide-channelHeaderCell-tv {
+    height: var(--jf-guide-rowHeightTv, 5.5em);
+}
+
+/* Misc
+   ------------------------------------------------------------------------ */
 
 .btnGuideViewSettings {
     margin: 0;
@@ -214,200 +761,6 @@
 
 .selectDateIcon {
     flex-shrink: 0;
-}
-
-@media all and (max-width: 50em) {
-    .newTvProgram,
-    .liveTvProgram,
-    .premiereTvProgram,
-    .guideHdIcon {
-        display: none;
-    }
-}
-
-.channelPrograms + .channelPrograms,
-.guide-channelHeaderCell + .guide-channelHeaderCell {
-    margin-top: -1px;
-}
-
-.channelPrograms-tv,
-.guide-channelHeaderCell-tv {
-    height: 3em;
-}
-
-.guide-channelTimeslotHeader,
-.timeslotHeader {
-    background: transparent !important;
-    height: 2.8em;
-}
-
-.programGrid {
-    padding-bottom: 4px;
-    flex-grow: 1;
-}
-
-.programCell {
-    color: inherit;
-    background: transparent;
-    border-style: solid;
-    border-width: 0 0 0 1px;
-    padding: 0 !important;
-    cursor: pointer;
-    outline: none !important;
-    width: 100%;
-    vertical-align: middle;
-    font-family: inherit;
-    font-size: inherit;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    display: flex;
-    text-decoration: none;
-    overflow: hidden;
-    align-items: center;
-
-    /* Needed for Firefox */
-    text-align: left;
-    contain: strict;
-    flex-grow: 1;
-    margin: 0 !important;
-}
-
-.guideProgramName {
-    padding: 0 0.7em 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    align-items: center;
-    display: flex;
-    position: relative;
-    flex-grow: 1;
-    contain: layout style paint;
-
-    /* transition: transform 60ms ease-out; */
-}
-
-.guide-programNameCaret {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 200%;
-}
-
-.guideProgramNameText {
-    margin: 0;
-    font-weight: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.guideProgramSecondaryInfo {
-    display: flex;
-    align-items: center;
-    margin-top: 0.1em;
-}
-
-.programIcon {
-    height: 1em;
-    width: 1em;
-    font-size: 1.6em;
-    color: #ddd;
-    flex-shrink: 0;
-    flex-grow: 0;
-
-    [dir="ltr"] & {
-        margin-left: 0.5em;
-    }
-
-    [dir="rtl"] & {
-        margin-right: 0.5em;
-    }
-}
-
-.guide-programTextIcon {
-    font-weight: bold;
-    font-size: 0.9em;
-    padding: 0.16em 0.3em;
-    border-radius: 0.25em;
-    margin-right: 0.35em;
-    width: auto;
-    height: auto;
-}
-
-.guide-programTextIcon-tv {
-    font-size: 0.74em;
-}
-
-.guideChannelNumber {
-    padding-left: 1em;
-    max-width: 30%;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    font-weight: normal;
-    margin: 0;
-}
-
-.guideChannelName {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    max-width: 70%;
-
-    [dir="ltr"] & {
-        margin-left: auto;
-        margin-right: 1em;
-    }
-
-    [dir="rtl"] & {
-        margin-right: auto;
-        margin-left: 1em;
-    }
-}
-
-.guideChannelImage {
-    position: absolute;
-    right: 8%;
-    top: 15%;
-    bottom: 15%;
-    width: 40%;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: right center;
-}
-
-@media all and (min-width: 62.5em) {
-    .guideChannelName {
-        max-width: 40%;
-    }
-}
-
-@media all and (max-width: 62.5em) {
-    .guideChannelNumber {
-        display: none;
-    }
-
-    .guideChannelImage {
-        width: 70%;
-    }
-}
-
-.channelsContainer {
-    display: flex;
-    flex-shrink: 0;
-    flex-direction: column;
-}
-
-.channelsContainer,
-.programGrid {
-    contain: layout style paint;
-}
-
-.timerIcon,
-.seriesTimerIcon {
-    color: #c33 !important;
-}
-
-.seriesTimerIcon-inactive {
-    color: inherit !important;
-    opacity: 0.7;
 }
 
 .guideOptions {
@@ -432,23 +785,4 @@
 .noRubberBanding {
     /* This is needed to combat the rubber banding in iOS */
     padding-bottom: 7em;
-}
-
-.guideDateTabsSlider {
-    text-align: center;
-}
-
-.guide-date-tab-button {
-    padding: 0.3em 0.7em !important;
-    margin: 0 0.3em !important;
-    font-weight: normal;
-}
-
-.guide-date-tab-button.emby-tab-button-active {
-    border-color: transparent !important;
-}
-
-.guide-date-tab-button.show-focus:focus {
-    border-radius: 0.15em !important;
-    transform: none !important;
 }
