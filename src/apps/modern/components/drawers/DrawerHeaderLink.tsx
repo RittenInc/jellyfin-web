@@ -7,7 +7,7 @@ import React from 'react';
 import { useSystemInfo } from 'hooks/useSystemInfo';
 import ListItemLink from 'components/ListItemLink';
 
-import appIcon from '@jellyfin/ux-web/icon-transparent.png';
+import appIcon from 'favicon-192x192.png';
 
 const DrawerHeaderLink = () => {
     const { data: systemInfo } = useSystemInfo();

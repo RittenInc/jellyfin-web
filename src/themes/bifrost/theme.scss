@@ -102,14 +102,8 @@ $glow: 0 0 12px rgba(85, 232, 255, 0.2), 0 0 28px rgba(147, 108, 255, 0.12);
     box-shadow: 0 6px 25px rgba(0, 0, 0, 0.35);
 }
 
-/* Bifrost wordmark in place of the Jellyfin banner */
-.pageTitleWithDefaultLogo {
-    background-image: url(logo-header.svg);
-
-    .layout-tv & {
-        background-image: url(logo-header.svg);
-    }
-}
+/* NOTE: the header wordmark is set in _base/_theme.scss so that every theme
+   carries Bifrost branding, not just this one. */
 
 /* The active tab sits on a slice of the bridge */
 .headerTabs .emby-tab-button-active {
@@ -342,7 +336,7 @@ $glow: 0 0 12px rgba(85, 232, 255, 0.2), 0 0 28px rgba(147, 108, 255, 0.12);
     width: 52vw;
     height: 64vh;
     transform: translateY(-50%);
-    background-image: url(logo-login.svg);
+    background-image: url(../../assets/img/bifrost-login-logo.png);
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;

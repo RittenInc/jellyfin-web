@@ -1,31 +1,36 @@
 {
-    "name": "Jellyfin",
-    "description": "The Free Software Media System",
+    "name": "Bifrost",
+    "description": "Bifrost Media Server",
     "lang": "en-US",
-    "short_name": "Jellyfin",
+    "short_name": "Bifrost",
     "start_url": "index.html#/home",
-    "theme_color": "#101010",
-    "background_color": "#101010",
+    "theme_color": "#050a12",
+    "background_color": "#050a12",
     "display": "standalone",
     "icons": [
         {
-            "sizes": "72x72",
-            "src": "favicons/touchicon72.png",
+            "sizes": "48x48",
+            "src": "favicons/favicon-48x48.png",
             "type": "image/png"
         },
         {
-            "sizes": "114x114",
-            "src": "favicons/touchicon114.png",
+            "sizes": "64x64",
+            "src": "favicons/favicon-64x64.png",
             "type": "image/png"
         },
         {
-            "sizes": "144x144",
-            "src": "favicons/touchicon144.png",
+            "sizes": "180x180",
+            "src": "favicons/favicon-180x180.png",
+            "type": "image/png"
+        },
+        {
+            "sizes": "192x192",
+            "src": "favicons/favicon-192x192.png",
             "type": "image/png"
         },
         {
             "sizes": "512x512",
-            "src": "favicons/touchicon512.png",
+            "src": "favicons/favicon-512x512.png",
             "type": "image/png"
         }
     ]

@@ -142,18 +142,14 @@ html {
     }
 }
 
+// NOTE: Bifrost ships a single light wordmark rather than the light/dark pair
+// Jellyfin shipped, so there is no $dark branch here. A light-background theme
+// (Light, Apple TV) would need a dark variant adding back.
 .pageTitleWithDefaultLogo {
-    background-image:
-        if(
-            /* NOTE: Stylelint seems to lack support for if() syntax currently */
-            /* stylelint-disable-next-line @stylistic/function-whitespace-after */
-            sass($dark): url(@jellyfin/ux-web/banner-light.png);
-            /* stylelint-disable-next-line @stylistic/function-whitespace-after */
-            else: url(@jellyfin/ux-web/banner-dark.png);
-        );
+    background-image: url(assets/img/bifrost-header.png);
 
     .layout-tv & {
-        background-image: url(@jellyfin/ux-web/icon-transparent.png);
+        background-image: url(favicon-512x512.png);
     }
 }
 

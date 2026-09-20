@@ -1,4 +1,4 @@
-import icon from '@jellyfin/ux-web/icon-transparent.png';
+import icon from 'favicon-512x512.png';
 
 import { PluginType } from 'constants/pluginType';
 import { randomInt } from 'utils/number';

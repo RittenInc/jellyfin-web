@@ -84,10 +84,10 @@ const config = {
                 },
                 'config.json',
                 'robots.txt',
+                // Bifrost PWA icons, referenced by manifest.json
                 {
-                    from: 'touchicon*.png',
-                    context: path.resolve(__dirname, 'node_modules/@jellyfin/ux-web/favicons'),
-                    to: 'favicons'
+                    from: 'favicon-*.png',
+                    to: 'favicons/[name][ext]'
                 },
                 ...Assets.map(asset => {
                     return {
