@@ -327,23 +327,6 @@ $glow: 0 0 12px rgba(85, 232, 255, 0.2), 0 0 28px rgba(147, 108, 255, 0.12);
         linear-gradient(110deg, #020711 0%, #040b16 48%, #050913 70%, #02060d 100%);
 }
 
-/* Hero artwork sitting behind the form */
-#loginPage::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 4vw;
-    width: 52vw;
-    height: 64vh;
-    transform: translateY(-50%);
-    background-image: url(../../assets/img/bifrost-login-logo.png);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-    filter: drop-shadow(0 0 18px rgba(85, 232, 255, 0.1)) drop-shadow(0 0 35px rgba(147, 108, 255, 0.08));
-    pointer-events: none;
-}
-
 /* A faint scatter of stars over the whole panel */
 #loginPage::after {
     content: "";
@@ -358,13 +341,16 @@ $glow: 0 0 12px rgba(85, 232, 255, 0.2), 0 0 28px rgba(147, 108, 255, 0.12);
     pointer-events: none;
 }
 
-/* The hero replaces the server splash screen, and the header is noise here */
+/* The Bifrost artwork replaces the server splash screen, and the header — the
+   legacy .skinHeader or the modern MUI AppBar — is noise on a sign-in screen.
+   Without this the modern toolbar shows the server name over the artwork. */
 body:has(#loginPage:not(.hide)) .backgroundContainer {
     background: none;
     opacity: 0;
 }
 
-body:has(#loginPage:not(.hide)) .skinHeader {
+body:has(#loginPage:not(.hide)) .skinHeader,
+body:has(#loginPage:not(.hide)) .MuiAppBar-root {
     display: none;
 }
 
@@ -390,6 +376,21 @@ body:has(#loginPage:not(.hide)) .skinHeader {
     #loginPage > .padded-left {
         backdrop-filter: blur(18px);
     }
+}
+
+/* The logo lives inside the card by default. It only moves out to a hero once
+   the viewport is wide enough to hold both without the card covering it — the
+   card is ~460px on the right, so anything narrower than ~85em overlaps. */
+#loginPage > .padded-left::before {
+    content: "";
+    display: block;
+    height: 5.5em;
+    margin: 0 auto 1.75rem;
+    background-image: url(../../assets/img/bifrost-login-logo.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    filter: drop-shadow(0 0 14px rgba(85, 232, 255, 0.12)) drop-shadow(0 0 28px rgba(147, 108, 255, 0.1));
 }
 
 #loginPage .sectionTitle,
@@ -426,12 +427,32 @@ body:has(#loginPage:not(.hide)) .skinHeader {
 }
 /* stylelint-enable property-no-vendor-prefix, selector-pseudo-class-no-unknown */
 
-/* The desktop hero does not survive phone widths — drop it and centre the card */
-@media (max-width: 43.75em) {
+/* Wide screens have room for the full hero treatment: artwork on the left,
+   card on the right, and the in-card logo removed so it is not shown twice. */
+@media (min-width: 85em) {
     #loginPage::before {
-        display: none;
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 4vw;
+        width: 46vw;
+        height: 64vh;
+        transform: translateY(-50%);
+        background-image: url(../../assets/img/bifrost-login-logo.png);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        filter: drop-shadow(0 0 18px rgba(85, 232, 255, 0.1)) drop-shadow(0 0 35px rgba(147, 108, 255, 0.08));
+        pointer-events: none;
     }
 
+    #loginPage > .padded-left::before {
+        display: none;
+    }
+}
+
+/* Phone widths: full-bleed card */
+@media (max-width: 43.75em) {
     #loginPage > .padded-left {
         width: calc(100% - 24px);
         max-width: 440px;
