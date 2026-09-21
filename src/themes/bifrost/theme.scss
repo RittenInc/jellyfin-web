@@ -16,6 +16,9 @@ $bg-paper: #0c141f;
 $surface: rgba(12, 20, 31, 0.82);
 $surface-hover: rgba(20, 31, 47, 0.92);
 
+/* The translucent sheet menus, dialogs and drawers float on */
+$overlay: rgba(9, 16, 26, 0.72);
+
 /* The bridge — the four stops every accent in this theme is built from */
 $cyan: #55e8ff;
 $blue: #4b9cff;
@@ -38,6 +41,9 @@ $header-gradient: linear-gradient(90deg, rgba(3, 9, 18, 0.98) 0%, rgba(4, 9, 20,
 $page-wash:
     radial-gradient(circle at 50% -20%, rgba(75, 156, 255, 0.13), transparent 42%),
     radial-gradient(circle at 85% 30%, rgba(147, 108, 255, 0.08), transparent 35%);
+
+/* Hairline separating chrome from content */
+$edge: rgba(85, 232, 255, 0.1);
 
 /* Glow applied to hovered artwork */
 $glow: 0 0 12px rgba(85, 232, 255, 0.2), 0 0 28px rgba(147, 108, 255, 0.12);
@@ -68,7 +74,7 @@ $glow: 0 0 12px rgba(85, 232, 255, 0.2), 0 0 28px rgba(147, 108, 255, 0.12);
     $appBar-defaultBg: $bg-base,
     $appBar-gradient: $header-gradient,
     $appBar-transparentBg: rgba(5, 10, 18, 0.55),
-    $surface-overlay: rgba(9, 16, 26, 0.72),
+    $surface-overlay: $overlay,
     $filledInput-bg: rgba(7, 15, 27, 0.9),
     $filledInput-borderColor: rgba(85, 232, 255, 0.22),
     $card-borderRadius: 0.55em,
@@ -102,7 +108,7 @@ $glow: 0 0 12px rgba(85, 232, 255, 0.2), 0 0 28px rgba(147, 108, 255, 0.12);
    _base/_theme.scss. */
 .skinHeader-withBackground,
 .MuiAppBar-root.MuiAppBar-colorDefault {
-    border-bottom: 1px solid rgba(85, 232, 255, 0.1);
+    border-bottom: 1px solid $edge;
     box-shadow: 0 6px 25px rgba(0, 0, 0, 0.35);
 }
 
@@ -472,4 +478,88 @@ body:has(#loginPage:not(.hide)) .MuiAppBar-root {
         max-width: 100%;
         box-sizing: border-box;
     }
+}
+
+/* Modern app chrome (MUI)
+   ------------------------------------------------------------------------
+   The dashboard and settings pages are built from MUI components, which only
+   receive the flat palette colours in bifrost/index.ts. On their own they read
+   as plain panels sitting on top of the site rather than part of it. These
+   rules give them the same language the rest of Bifrost already uses: the
+   translucent $overlay sheet behind menus and dialogs, the cyan hairline that
+   edges the header, and the bridge gradient that marks the active header tab. */
+
+/* Floating surfaces — menus, popovers, dialogs and the mobile drawer */
+.MuiMenu-paper,
+.MuiPopover-paper,
+.MuiDialog-paper,
+.MuiDrawer-modal .MuiDrawer-paper {
+    border: 1px solid $edge;
+    background-color: $overlay;
+    background-image: none;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+}
+
+@supports (backdrop-filter: blur(12px)) {
+    .MuiMenu-paper,
+    .MuiPopover-paper,
+    .MuiDialog-paper,
+    .MuiDrawer-paper {
+        backdrop-filter: blur(12px);
+    }
+}
+
+/* The permanent side navigation is part of the page frame rather than a
+   floating sheet, so it only draws the edge facing the content. */
+.MuiDrawer-docked .MuiDrawer-paper {
+    border: 0;
+    border-right: 1px solid $edge;
+    background-color: $overlay;
+    background-image: none;
+}
+
+/* _base/theme.ts gives subheaders `background-color: inherit` so they can cover
+   scrolled content; on a translucent drawer that stacks a second layer of tint. */
+.MuiDrawer-paper .MuiListSubheader-root {
+    background-color: transparent;
+}
+
+.MuiDrawer-paper .MuiDivider-root {
+    border-color: $edge;
+}
+
+/* The current page rides a slice of the bridge, matching .headerTabs above */
+.MuiDrawer-paper .MuiListItemButton-root.Mui-selected {
+    position: relative;
+    background-color: rgba(85, 232, 255, 0.1);
+    color: #69e9ff;
+}
+
+.MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root {
+    color: inherit;
+}
+
+.MuiDrawer-paper .MuiListItemButton-root.Mui-selected::before {
+    content: "";
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    left: 0;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+
+    /* A vertical slice of the bridge: $bridge runs at 100deg, which on a bar this
+       narrow would sample across the short axis and read as one flat colour. */
+    background: linear-gradient(180deg, $cyan 0%, $blue 55%, $purple 100%);
+    box-shadow: 0 0 8px rgba(85, 232, 255, 0.45);
+}
+
+/* Content surfaces, matching the radius and edge the legacy .paperList uses.
+   elevation0 is excluded: components that opt out of elevation (the library
+   AlphabetPicker, FilterButton) are meant to read flat, not as a raised card. */
+.MuiCard-root,
+main .MuiPaper-root.MuiPaper-elevation:not(.MuiPaper-elevation0) {
+    border: 1px solid rgba(85, 232, 255, 0.08);
+    border-radius: var(--jf-card-borderRadius, 0.55em);
+    background-image: none;
 }
