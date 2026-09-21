@@ -408,7 +408,7 @@ function getUserViews(apiClient, userId) {
                     guideView.Name = globalize.translate('Guide');
                     guideView.ImageTags = {};
                     guideView.icon = 'dvr';
-                    guideView.url = '#/livetv?tab=1';
+                    guideView.url = '#/livetv?tab=0';
                     list.push(guideView);
                 }
             }

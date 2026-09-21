@@ -93,11 +93,6 @@ function buildSection(
 
     html += '<a is="emby-linkbutton" href="' + appRouter.getRouteUrl('livetv', {
         serverId,
-        section: 'programs'
-    }) + '" class="raised"><span>' + globalize.translate('Programs') + '</span></a>';
-
-    html += '<a is="emby-linkbutton" href="' + appRouter.getRouteUrl('livetv', {
-        serverId,
         section: 'guide'
     }) + '" class="raised"><span>' + globalize.translate('Guide') + '</span></a>';
 
@@ -106,19 +101,14 @@ function buildSection(
         section: 'channels'
     }) + '" class="raised"><span>' + globalize.translate('Channels') + '</span></a>';
 
+    html += '<a is="emby-linkbutton" href="' + appRouter.getRouteUrl('livetv', {
+        serverId,
+        section: 'programs'
+    }) + '" class="raised"><span>' + globalize.translate('Programs') + '</span></a>';
+
     html += '<a is="emby-linkbutton" href="' + appRouter.getRouteUrl('recordedtv', {
         serverId
     }) + '" class="raised"><span>' + globalize.translate('Recordings') + '</span></a>';
-
-    html += '<a is="emby-linkbutton" href="' + appRouter.getRouteUrl('livetv', {
-        serverId,
-        section: 'dvrschedule'
-    }) + '" class="raised"><span>' + globalize.translate('Schedule') + '</span></a>';
-
-    html += '<a is="emby-linkbutton" href="' + appRouter.getRouteUrl('livetv', {
-        serverId,
-        section: 'seriesrecording'
-    }) + '" class="raised"><span>' + globalize.translate('Series') + '</span></a>';
 
     html += '</div>';
     if (options.enableOverflow) {

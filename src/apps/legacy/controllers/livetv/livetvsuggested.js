@@ -16,6 +16,9 @@ import 'elements/emby-button/emby-button';
 
 import 'styles/scrollstyles.scss';
 
+const GUIDE_TAB_INDEX = 0;
+const PROGRAMS_TAB_INDEX = 2;
+
 function enableScrollX() {
     return !layoutManager.desktop;
 }
@@ -157,17 +160,13 @@ function renderItems(page, items, sectionClass, overlayButton, cardOptions) {
 
 function getTabs() {
     return [{
-        name: globalize.translate('Programs')
-    }, {
         name: globalize.translate('Guide')
     }, {
         name: globalize.translate('Channels')
     }, {
+        name: globalize.translate('Programs')
+    }, {
         name: globalize.translate('Recordings')
-    }, {
-        name: globalize.translate('Schedule')
-    }, {
-        name: globalize.translate('Series')
     }];
 }
 
@@ -191,16 +190,12 @@ function setScrollClasses(elem, scrollX) {
 
 function getDefaultTabIndex(folderId) {
     switch (userSettings.get('landing-' + folderId)) {
-        case LibraryTab.Guide:
-            return 1;
         case LibraryTab.Channels:
+            return 1;
+        case LibraryTab.Programs:
             return 2;
         case LibraryTab.Recordings:
             return 3;
-        case LibraryTab.Schedule:
-            return 4;
-        case LibraryTab.SeriesTimers:
-            return 5;
         default:
             return 0;
     }
@@ -239,34 +234,26 @@ export default function (view, params) {
         // TODO int is a little hard to read
         switch (index) {
             case 0:
-                depends = 'livetvsuggested';
-                break;
-
-            case 1:
                 depends = 'livetvguide';
                 break;
 
-            case 2:
+            case 1:
                 depends = 'livetvchannels';
+                break;
+
+            case 2:
+                depends = 'livetvsuggested';
                 break;
 
             case 3:
                 depends = 'livetvrecordings';
-                break;
-
-            case 4:
-                depends = 'livetvschedule';
-                break;
-
-            case 5:
-                depends = 'livetvseriestimers';
                 break;
         }
 
         import(`../livetv/${depends}`).then(({ default: ControllerFactory }) => {
             let tabContent;
 
-            if (index === 0) {
+            if (index === PROGRAMS_TAB_INDEX) {
                 tabContent = view.querySelector(`.pageTabContent[data-index="${index}"]`);
                 self.tabContent = tabContent;
             }
@@ -276,7 +263,7 @@ export default function (view, params) {
             if (!controller) {
                 tabContent = view.querySelector(`.pageTabContent[data-index="${index}"]`);
 
-                if (index === 0) {
+                if (index === PROGRAMS_TAB_INDEX) {
                     controller = self;
                 } else {
                     controller = new ControllerFactory(view, params, tabContent);
@@ -307,7 +294,7 @@ export default function (view, params) {
             initialTabIndex = null;
 
             if (renderedTabs.indexOf(index) === -1) {
-                if (index === 1) {
+                if (index === GUIDE_TAB_INDEX) {
                     renderedTabs.push(index);
                 }
 
@@ -341,7 +328,7 @@ export default function (view, params) {
     });
 
     self.initTab = function () {
-        const tabContent = view.querySelector('.pageTabContent[data-index="0"]');
+        const tabContent = view.querySelector(`.pageTabContent[data-index="${PROGRAMS_TAB_INDEX}"]`);
         const containers = tabContent.querySelectorAll('.itemsContainer');
 
         for (let i = 0, length = containers.length; i < length; i++) {
@@ -350,7 +337,7 @@ export default function (view, params) {
     };
 
     self.renderTab = function () {
-        const tabContent = view.querySelector('.pageTabContent[data-index="0"]');
+        const tabContent = view.querySelector(`.pageTabContent[data-index="${PROGRAMS_TAB_INDEX}"]`);
 
         if (enableFullRender()) {
             reload(tabContent, true);

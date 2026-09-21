@@ -306,10 +306,10 @@ class AppRouter {
 
         if (item === 'livetv') {
             if (options.section === 'programs') {
-                return '#/livetv?tab=0&serverId=' + serverId;
+                return '#/livetv?tab=2&serverId=' + serverId;
             }
             if (options.section === 'guide') {
-                return '#/livetv?tab=1&serverId=' + serverId;
+                return '#/livetv?tab=0&serverId=' + serverId;
             }
 
             if (options.section === 'movies') {
@@ -337,15 +337,7 @@ class AppRouter {
             }
 
             if (options.section === 'channels') {
-                return '#/livetv?tab=2&serverId=' + serverId;
-            }
-
-            if (options.section === 'dvrschedule') {
-                return '#/livetv?tab=4&serverId=' + serverId;
-            }
-
-            if (options.section === 'seriesrecording') {
-                return '#/livetv?tab=5&serverId=' + serverId;
+                return '#/livetv?tab=1&serverId=' + serverId;
             }
 
             return '#/livetv?serverId=' + serverId;
@@ -521,7 +513,7 @@ class AppRouter {
     }
 
     showGuide() {
-        return this.show('livetv?tab=1');
+        return this.show('livetv?tab=0');
     }
 
     goHome() {

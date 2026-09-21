@@ -30,7 +30,9 @@ const LibraryViewMenu: FC = () => {
     }, []);
 
     const currentRoute = LibraryRoutes.find(({ path }) => path === location.pathname);
-    const currentTab = currentRoute?.views.find(({ index }) => index === activeTab);
+    // Fall back to the first view so stale links to a removed tab still show the menu
+    const currentTab = currentRoute?.views.find(({ index }) => index === activeTab)
+        ?? currentRoute?.views[0];
 
     if (!currentTab) return null;
 

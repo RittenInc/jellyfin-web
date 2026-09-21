@@ -157,29 +157,21 @@ function getLandingScreenOptions(type) {
     } else if (type === 'livetv') {
         list.push(
             {
-                name: globalize.translate('Programs'),
-                value: LibraryTab.Programs,
-                isDefault: true
-            },
-            {
                 name: globalize.translate('Guide'),
-                value: LibraryTab.Guide
+                value: LibraryTab.Guide,
+                isDefault: true
             },
             {
                 name: globalize.translate('Channels'),
                 value: LibraryTab.Channels
             },
             {
+                name: globalize.translate('Programs'),
+                value: LibraryTab.Programs
+            },
+            {
                 name: globalize.translate('Recordings'),
                 value: LibraryTab.Recordings
-            },
-            {
-                name: globalize.translate('Schedule'),
-                value: LibraryTab.Schedule
-            },
-            {
-                name: globalize.translate('Series'),
-                value: LibraryTab.SeriesTimers
             }
         );
     } else if (type === 'homevideos') {

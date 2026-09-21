@@ -2,23 +2,6 @@ import { LibraryTab } from 'types/libraryTab';
 import type { LibraryTabContent } from 'types/libraryTabContent';
 import { SectionType } from 'types/sections';
 
-const seriestimersTabContent: LibraryTabContent = {
-    viewType: LibraryTab.SeriesTimers,
-    isPaginationEnabled: false,
-    isBtnFilterEnabled: false,
-    isBtnGridListEnabled: false,
-    isBtnSortEnabled: false,
-    isAlphabetPickerEnabled: false
-};
-
-const scheduleTabContent: LibraryTabContent = {
-    viewType: LibraryTab.Schedule,
-    sectionsView: {
-        programSections: [SectionType.ActiveRecordings],
-        isLiveTvUpcomingRecordings: true
-    }
-};
-
 const recordingsTabContent: LibraryTabContent = {
     viewType: LibraryTab.Recordings,
     sectionsView: {
@@ -55,12 +38,10 @@ const guideTabContent: LibraryTabContent = {
 };
 
 const liveTvViews: Record<number, LibraryTabContent> = {
-    0: programsTabContent,
-    1: guideTabContent,
-    2: channelsTabContent,
-    3: recordingsTabContent,
-    4: scheduleTabContent,
-    5: seriestimersTabContent
+    0: guideTabContent,
+    1: channelsTabContent,
+    2: programsTabContent,
+    3: recordingsTabContent
 };
 
 export default liveTvViews;

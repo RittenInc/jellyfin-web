@@ -11,34 +11,24 @@ export const LibraryRoutes: LibraryRoute[] = [
         views: [
             {
                 index: 0,
-                label: 'Programs',
-                view: LibraryTab.Programs,
+                label: 'Guide',
+                view: LibraryTab.Guide,
                 isDefault: true
             },
             {
                 index: 1,
-                label: 'Guide',
-                view: LibraryTab.Guide
+                label: 'Channels',
+                view: LibraryTab.Channels
             },
             {
                 index: 2,
-                label: 'Channels',
-                view: LibraryTab.Channels
+                label: 'Programs',
+                view: LibraryTab.Programs
             },
             {
                 index: 3,
                 label: 'Recordings',
                 view: LibraryTab.Recordings
-            },
-            {
-                index: 4,
-                label: 'Schedule',
-                view: LibraryTab.Schedule
-            },
-            {
-                index: 5,
-                label: 'Series',
-                view: LibraryTab.SeriesTimers
             }
         ]
     },

@@ -42,7 +42,9 @@ const LibraryPage: FC<LibraryPageProps> = ({
     type
 }) => {
     const { libraryId, activeTab } = useCurrentTab();
-    const currentTab = viewsByKind[type][activeTab];
+    const views = viewsByKind[type];
+    // Fall back to the first view so stale links to a removed tab don't break the page
+    const currentTab = views[activeTab] ?? views[0];
 
     return (
         <Page
