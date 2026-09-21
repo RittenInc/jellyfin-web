@@ -27,15 +27,25 @@ function getThemeStylesheetInfo(id) {
     });
 }
 
+// `data-theme` is the source of truth, not our cached id alone. MUI's CssVarsProvider
+// asserts the attribute itself when it mounts, which can land after we have set it. If
+// we compared ids only we would treat that as already applied and never re-sync, which
+// is why a half-themed page could previously only be fixed by switching theme away and
+// back.
+function isThemeApplied(id) {
+    return currentThemeId === id
+        && document.documentElement.getAttribute('data-theme') === id;
+}
+
 function setTheme(id) {
     return new Promise(function (resolve) {
-        if (currentThemeId && currentThemeId === id) {
+        if (isThemeApplied(id)) {
             resolve();
             return;
         }
 
         getThemeStylesheetInfo(id).then(function (info) {
-            if (currentThemeId && currentThemeId === info.id) {
+            if (isThemeApplied(info.id)) {
                 resolve();
                 return;
             }
