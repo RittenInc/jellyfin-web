@@ -56,7 +56,10 @@ export function getServers() {
     });
 }
 
-const baseDefaultTheme = {
+// The last-resort default, used before config.json has been fetched and if the
+// fetch fails. Derived from the bundled config so src/config.json stays the single
+// place the default theme is declared, rather than hardcoding an id in two files.
+const baseDefaultTheme = DefaultConfig.themes?.find((theme) => theme.default) || {
     'name': 'Dark',
     'id': 'dark',
     'default': true
@@ -87,7 +90,8 @@ export function getThemes() {
         return themes;
     }).catch(error => {
         console.log('cannot get web config:', error);
-        checkDefaultTheme();
+        // Use the themes we are falling back to, so the default matches the list
+        checkDefaultTheme(DefaultConfig.themes);
         return DefaultConfig.themes;
     });
 }

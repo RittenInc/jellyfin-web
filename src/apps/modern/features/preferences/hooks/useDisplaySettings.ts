@@ -12,7 +12,7 @@ import { currentSettings, UserSettings } from 'scripts/settings/userSettings';
 import type { DisplaySettingsValues } from '../types/displaySettingsValues';
 import { useThemes } from 'hooks/useThemes';
 import { Theme } from 'types/webConfig';
-import { FALLBACK_THEME_ID } from 'hooks/useUserTheme';
+import { resolveDefaultThemeId } from 'hooks/useUserTheme';
 
 interface UseDisplaySettingsParams {
     userId?: string | null;
@@ -85,7 +85,7 @@ async function loadDisplaySettings({
 
     const displaySettings = {
         customCss: settings.customCss() || '',
-        dashboardTheme: settings.dashboardTheme() || defaultTheme?.id || FALLBACK_THEME_ID,
+        dashboardTheme: settings.dashboardTheme() || resolveDefaultThemeId(defaultTheme?.id),
         dateTimeLocale: settings.dateTimeLocale() || 'auto',
         disableCustomCss: Boolean(settings.disableCustomCss()),
         displayMissingEpisodes: user?.Configuration?.DisplayMissingEpisodes ?? false,
@@ -105,7 +105,7 @@ async function loadDisplaySettings({
         screensaverTime: settings.screensaverTime(),
         backdropScreensaverInterval: settings.backdropScreensaverInterval(),
         slideshowInterval: settings.slideshowInterval(),
-        theme: settings.theme() || defaultTheme?.id || FALLBACK_THEME_ID
+        theme: settings.theme() || resolveDefaultThemeId(defaultTheme?.id)
     };
 
     return {

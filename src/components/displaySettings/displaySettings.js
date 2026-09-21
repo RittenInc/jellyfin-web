@@ -5,6 +5,7 @@ import { PluginType } from 'constants/pluginType';
 import { getUserQuery } from 'hooks/api/useUser';
 import { ServerConnections } from 'lib/jellyfin-apiclient';
 import { queryClient } from 'utils/query/queryClient';
+import { getDefaultTheme } from 'scripts/settings/webSettings';
 
 import browser from '../../scripts/browser';
 import layoutManager from '../layoutManager';
@@ -31,11 +32,12 @@ function fillThemes(select, selectedTheme) {
             return `<option value="${t.id}">${escapeHtml(t.name)}</option>`;
         }).join('');
 
-        // get default theme
-        const defaultTheme = themes.find(theme => theme.default);
+        // get default theme, falling back to the bundled config when the served
+        // one names none (otherwise this throws and the select is left empty)
+        const defaultTheme = themes.find(theme => theme.default) || getDefaultTheme();
 
         // set the current theme
-        select.value = selectedTheme || defaultTheme.id;
+        select.value = selectedTheme || defaultTheme?.id;
     });
 }
 
