@@ -18,14 +18,19 @@ export const resolveDefaultThemeId = (configuredDefaultId?: string) => (
     configuredDefaultId || getDefaultTheme()?.id || FALLBACK_THEME_ID
 );
 
+/**
+ * The theme for the whole site, admin dashboard included.
+ *
+ * Jellyfin has a separate 'dashboardTheme' setting, which we deliberately do not
+ * use: one theme applies everywhere, so picking a theme does not leave the
+ * dashboard behind on whatever was stored for it. Any value a user still has
+ * saved under 'dashboardTheme' is ignored rather than migrated.
+ */
 export function useUserTheme() {
-    const { theme, dashboardTheme } = useUserSettings();
+    const { theme } = useUserSettings();
     const { defaultTheme } = useThemes();
 
-    const defaultId = resolveDefaultThemeId(defaultTheme?.id);
-
     return {
-        theme: theme || defaultId,
-        dashboardTheme: dashboardTheme || defaultId
+        theme: theme || resolveDefaultThemeId(defaultTheme?.id)
     };
 }

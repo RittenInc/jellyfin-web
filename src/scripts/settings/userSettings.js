@@ -423,14 +423,6 @@ export class UserSettings {
      * @param {string|undefined} [val] - Theme for Dashboard.
      * @return {string} Theme for Dashboard.
      */
-    dashboardTheme(val) {
-        if (val !== undefined) {
-            return this.set('dashboardTheme', val);
-        }
-
-        return this.get('dashboardTheme');
-    }
-
     /**
      * Get or set skin.
      * @param {string|undefined} val - Skin.
@@ -743,7 +735,6 @@ export const language = currentSettings.language.bind(currentSettings);
 export const dateTimeLocale = currentSettings.dateTimeLocale.bind(currentSettings);
 export const skipBackLength = currentSettings.skipBackLength.bind(currentSettings);
 export const skipForwardLength = currentSettings.skipForwardLength.bind(currentSettings);
-export const dashboardTheme = currentSettings.dashboardTheme.bind(currentSettings);
 export const skin = currentSettings.skin.bind(currentSettings);
 export const theme = currentSettings.theme.bind(currentSettings);
 export const screensaver = currentSettings.screensaver.bind(currentSettings);

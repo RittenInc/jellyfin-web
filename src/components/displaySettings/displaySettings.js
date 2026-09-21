@@ -95,7 +95,6 @@ function loadForm(context, user, userSettings) {
         context.querySelector('.learnHowToContributeContainer').classList.add('hide');
     }
 
-    context.querySelector('.selectDashboardThemeContainer').classList.toggle('hide', !user.Policy.IsAdministrator);
     context.querySelector('.txtSlideshowIntervalContainer').classList.remove('hide');
 
     if (appHost.supports(AppFeature.Screensaver)) {
@@ -115,7 +114,6 @@ function loadForm(context, user, userSettings) {
     }
 
     fillThemes(context.querySelector('#selectTheme'), userSettings.theme());
-    fillThemes(context.querySelector('#selectDashboardTheme'), userSettings.dashboardTheme());
 
     loadScreensavers(context, userSettings);
 
@@ -163,7 +161,6 @@ function saveUser(context, user, userSettingsInstance, apiClient) {
     userSettingsInstance.enableThemeSongs(context.querySelector('#chkThemeSong').checked);
     userSettingsInstance.enableThemeVideos(context.querySelector('#chkThemeVideo').checked);
     userSettingsInstance.theme(context.querySelector('#selectTheme').value);
-    userSettingsInstance.dashboardTheme(context.querySelector('#selectDashboardTheme').value);
     userSettingsInstance.screensaver(context.querySelector('.selectScreensaver').value);
     userSettingsInstance.backdropScreensaverInterval(context.querySelector('#txtBackdropScreensaverInterval').value);
     userSettingsInstance.slideshowInterval(context.querySelector('#txtSlideshowInterval').value);

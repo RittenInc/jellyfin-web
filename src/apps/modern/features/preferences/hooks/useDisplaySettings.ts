@@ -85,7 +85,6 @@ async function loadDisplaySettings({
 
     const displaySettings = {
         customCss: settings.customCss() || '',
-        dashboardTheme: settings.dashboardTheme() || resolveDefaultThemeId(defaultTheme?.id),
         dateTimeLocale: settings.dateTimeLocale() || 'auto',
         disableCustomCss: Boolean(settings.disableCustomCss()),
         displayMissingEpisodes: user?.Configuration?.DisplayMissingEpisodes ?? false,
@@ -133,7 +132,6 @@ async function saveDisplaySettings({
         userSettings.language(normalizeValue(newDisplaySettings.language));
     }
     userSettings.customCss(normalizeValue(newDisplaySettings.customCss));
-    userSettings.dashboardTheme(newDisplaySettings.dashboardTheme);
     userSettings.dateTimeLocale(normalizeValue(newDisplaySettings.dateTimeLocale));
     userSettings.disableCustomCss(newDisplaySettings.disableCustomCss);
     userSettings.enableBlurhash(newDisplaySettings.enableBlurHash);

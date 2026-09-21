@@ -13,7 +13,6 @@ import React, { Fragment } from 'react';
 import { appHost } from 'components/apphost';
 import { AppFeature } from 'constants/appFeature';
 import { LayoutMode } from 'constants/layoutMode';
-import { useApi } from 'hooks/useApi';
 import { useThemes } from 'hooks/useThemes';
 import globalize from 'lib/globalize';
 
@@ -26,7 +25,6 @@ interface DisplayPreferencesProps {
 }
 
 export function DisplayPreferences({ onChange, values }: Readonly<DisplayPreferencesProps>) {
-    const { user } = useApi();
     const { screensavers } = useScreensavers();
     const { themes } = useThemes();
 
@@ -106,24 +104,6 @@ export function DisplayPreferences({ onChange, values }: Readonly<DisplayPrefere
                     {globalize.translate('LabelLocalCustomCss')}
                 </FormHelperText>
             </FormControl>
-
-            { themes.length > 0 && user?.Policy?.IsAdministrator && (
-                <FormControl fullWidth>
-                    <InputLabel id='display-settings-dashboard-theme-label'>{globalize.translate('LabelDashboardTheme')}</InputLabel>
-                    <Select
-                        inputProps={{
-                            name: 'dashboardTheme'
-                        }}
-                        labelId='display-settings-dashboard-theme-label'
-                        onChange={ onChange }
-                        value={ values.dashboardTheme }
-                    >
-                        { ...themes.map(({ id, name }) => (
-                            <MenuItem key={ id } value={ id }>{ name }</MenuItem>
-                        )) }
-                    </Select>
-                </FormControl>
-            ) }
 
             { screensavers.length > 0 && appHost.supports(AppFeature.Screensaver) && (
                 <Fragment>

@@ -16,10 +16,8 @@ Events.on(ServerConnections, 'localusersignedin', () => {
     skinManager.setTheme(userSettings.theme());
 });
 
+// The admin dashboard used to switch to a separate 'dashboardTheme' here. One
+// theme now applies to the whole site, so every view uses the same one.
 pageClassOn('viewbeforeshow', 'page', function () {
-    if (this.classList.contains('type-interior')) {
-        skinManager.setTheme(userSettings.dashboardTheme());
-    } else {
-        skinManager.setTheme(userSettings.theme());
-    }
+    skinManager.setTheme(userSettings.theme());
 });

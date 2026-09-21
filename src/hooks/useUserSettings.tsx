@@ -10,7 +10,6 @@ interface UserSettings {
     customCss?: string
     disableCustomCss: boolean
     theme?: string
-    dashboardTheme?: string
     dateTimeLocale?: string
     language?: string
     /** The number of items to display per page in the library */
@@ -24,7 +23,6 @@ const UserSettingField = {
     DisableCustomCss: 'disableCustomCss',
     // Theme settings
     Theme: 'appTheme',
-    DashboardTheme: 'dashboardTheme',
     // Locale settings
     DateTimeLocale: 'datetimelocale',
     Language: 'language',
@@ -45,7 +43,6 @@ export const UserSettingsProvider: FC<PropsWithChildren<unknown>> = ({ children 
     const [ customCss, setCustomCss ] = useState<string>();
     const [ disableCustomCss, setDisableCustomCss ] = useState(false);
     const [ theme, setTheme ] = useState<string>();
-    const [ dashboardTheme, setDashboardTheme ] = useState<string>();
     const [ dateTimeLocale, setDateTimeLocale ] = useState<string>();
     const [ language, setLanguage ] = useState<string | undefined>(FALLBACK_CULTURE);
     const [ libraryPageSize, setLibraryPageSize ] = useState<number>(DEFAULT_LIBRARY_PAGE_SIZE);
@@ -56,7 +53,6 @@ export const UserSettingsProvider: FC<PropsWithChildren<unknown>> = ({ children 
         customCss,
         disableCustomCss,
         theme,
-        dashboardTheme,
         dateTimeLocale,
         locale: language,
         libraryPageSize
@@ -64,7 +60,6 @@ export const UserSettingsProvider: FC<PropsWithChildren<unknown>> = ({ children 
         customCss,
         disableCustomCss,
         theme,
-        dashboardTheme,
         dateTimeLocale,
         language,
         libraryPageSize
@@ -75,7 +70,6 @@ export const UserSettingsProvider: FC<PropsWithChildren<unknown>> = ({ children 
         setCustomCss(userSettings.customCss());
         setDisableCustomCss(userSettings.disableCustomCss());
         setTheme(userSettings.theme());
-        setDashboardTheme(userSettings.dashboardTheme());
         setDateTimeLocale(userSettings.dateTimeLocale());
         setLanguage(userSettings.language());
         setLibraryPageSize(userSettings.libraryPageSize() ?? DEFAULT_LIBRARY_PAGE_SIZE);

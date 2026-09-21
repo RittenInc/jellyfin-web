@@ -112,7 +112,7 @@ export const Component: FC = () => {
                     </AppBody>
                 </Box>
             </Box>
-            <ThemeCss dashboard />
+            <ThemeCss />
         </LocalizationProvider>
     );
 };

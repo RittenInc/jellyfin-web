@@ -1,6 +1,5 @@
 export interface DisplaySettingsValues {
     customCss: string;
-    dashboardTheme: string;
     dateTimeLocale: string;
     disableCustomCss: boolean;
     displayMissingEpisodes: boolean;
