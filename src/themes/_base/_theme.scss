@@ -76,6 +76,13 @@ $guide-nowLine: #22d3ee !default;
 // Assign custom css variables not part of the MUI theme palette
 :root {
     --jf-palette-background-defaultImage: #{$background-defaultImage};
+    // NOTE: AppBar-defaultBg *is* part of the MUI palette, but the app builds its
+    // ThemeProvider with `disableStyleSheetGeneration`, so MUI never emits the
+    // `[data-theme="..."]` custom property sheet that would define it. Without a
+    // declaration here the modern MUI AppBar falls back to the hardcoded default
+    // baked into `theme.vars` (#202020) in *every* theme, which is why a scrolled
+    // app bar used to render grey regardless of the selected theme.
+    --jf-palette-AppBar-defaultBg: #{$appBar-defaultBg};
     --jf-palette-AppBar-transparentBg: #{$appBar-transparentBg};
     --jf-palette-AppBar-gradient: #{$appBar-gradient};
     --jf-card-borderRadius: #{$card-borderRadius};
@@ -120,8 +127,13 @@ html {
     border-color: var(--jf-palette-divider, $divider);
 }
 
+// The modern app bar is transparent at the top of the page and swaps to
+// `color="default"` once scrolled (see components/OffsetAppBar.tsx), so give that
+// scrolled state the same treatment as the legacy header. Setting background-image
+// also clears MUI's dark elevation overlay, which would otherwise wash the bar out.
 .skinHeader-withBackground,
-.detailRibbon {
+.detailRibbon,
+.MuiAppBar-root.MuiAppBar-colorDefault {
     background-color: var(--jf-palette-AppBar-defaultBg, $appBar-defaultBg);
     background-image: var(--jf-palette-AppBar-gradient, $appBar-gradient);
 }

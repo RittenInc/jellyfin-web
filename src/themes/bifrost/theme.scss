@@ -97,7 +97,11 @@ $glow: 0 0 12px rgba(85, 232, 255, 0.2), 0 0 28px rgba(147, 108, 255, 0.12);
 /* Header
    ------------------------------------------------------------------------ */
 
-.skinHeader-withBackground {
+/* The scrolled MUI app bar is included so it matches the legacy header instead of
+   keeping MUI's elevation shadow. Its background comes from $appBar-gradient via
+   _base/_theme.scss. */
+.skinHeader-withBackground,
+.MuiAppBar-root.MuiAppBar-colorDefault {
     border-bottom: 1px solid rgba(85, 232, 255, 0.1);
     box-shadow: 0 6px 25px rgba(0, 0, 0, 0.35);
 }
