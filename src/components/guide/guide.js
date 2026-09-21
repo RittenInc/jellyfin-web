@@ -148,7 +148,7 @@ function Guide(options) {
     let currentDate;
     let currentStartIndex = 0;
     let currentChannelLimit = 0;
-    let autoRefreshInterval;
+    let autoRefreshTimeout;
     let nowIndicatorInterval;
     let programCells;
     let lastFocusDirection;
@@ -165,14 +165,28 @@ function Guide(options) {
     let channelFilter = '';
     let channelSearchTimeout;
 
+    const autoRefreshIntervalMs = 60000 * 15;
+
+    // A failed load would otherwise leave the guide blank until the page was reloaded by
+    // hand, so back off a few times before falling back to the normal auto refresh
+    const loadRetryDelaysMs = [5000, 15000, 60000];
+    let loadRetryTimeout;
+    let loadRetryIndex = 0;
+
+    // Timestamp of the last successful render, used to tell whether what is on screen is stale
+    let lastRenderTimeMs = 0;
+    let isLoadingGuide = false;
+
     self.refresh = function () {
         currentDate = null;
+        stopLoadRetry();
         reloadPage(options.element);
         restartAutoRefresh();
     };
 
     self.pause = function () {
         stopAutoRefresh();
+        stopLoadRetry();
         stopNowIndicatorTimer();
     };
 
@@ -181,15 +195,26 @@ function Guide(options) {
         updateNowIndicator();
         updateClock();
 
-        if (refreshData) {
+        if (isLoadingGuide) {
+            // A load is already in flight, let it finish and rearm the timer on its own
+            restartAutoRefresh();
+            return;
+        }
+
+        const msSinceRender = lastRenderTimeMs ? (new Date().getTime() - lastRenderTimeMs) : null;
+
+        if (refreshData || msSinceRender === null || msSinceRender >= autoRefreshIntervalMs) {
             self.refresh();
         } else {
-            restartAutoRefresh();
+            // Resume the original schedule rather than starting a new one, so hiding and
+            // showing the guide repeatedly cannot postpone a refresh indefinitely
+            restartAutoRefresh(autoRefreshIntervalMs - msSinceRender);
         }
     };
 
     self.destroy = function () {
         stopAutoRefresh();
+        stopLoadRetry();
         stopNowIndicatorTimer();
 
         if (channelSearchTimeout) {
@@ -209,21 +234,64 @@ function Guide(options) {
         items = {};
     };
 
-    function restartAutoRefresh() {
+    // A timeout rather than an interval, so the caller can ask for the remainder of an
+    // already running cycle. Each refresh rearms it through self.refresh.
+    function restartAutoRefresh(delayMs) {
         stopAutoRefresh();
 
-        const intervalMs = 60000 * 15; // (minutes)
+        const delay = delayMs == null ? autoRefreshIntervalMs : Math.max(delayMs, 0);
 
-        autoRefreshInterval = setInterval(function () {
+        autoRefreshTimeout = setTimeout(function () {
+            autoRefreshTimeout = null;
             self.refresh();
-        }, intervalMs);
+        }, delay);
     }
 
     function stopAutoRefresh() {
-        if (autoRefreshInterval) {
-            clearInterval(autoRefreshInterval);
-            autoRefreshInterval = null;
+        if (autoRefreshTimeout) {
+            clearTimeout(autoRefreshTimeout);
+            autoRefreshTimeout = null;
         }
+    }
+
+    function stopLoadRetry() {
+        if (loadRetryTimeout) {
+            clearTimeout(loadRetryTimeout);
+            loadRetryTimeout = null;
+        }
+    }
+
+    function scheduleLoadRetry() {
+        stopLoadRetry();
+
+        const delay = loadRetryDelaysMs[loadRetryIndex];
+
+        if (delay == null) {
+            return;
+        }
+
+        loadRetryIndex++;
+
+        loadRetryTimeout = setTimeout(function () {
+            loadRetryTimeout = null;
+            reloadPage(options.element);
+        }, delay);
+    }
+
+    function toggleLoadError(show) {
+        const elem = options.element.querySelector('.guideLoadError');
+
+        if (elem) {
+            elem.classList.toggle('hide', !show);
+        }
+    }
+
+    function onGuideLoadError(err) {
+        console.error('[guide] error loading guide data', err);
+
+        hideLoading();
+        toggleLoadError(true);
+        scheduleLoadRetry();
     }
 
     function startNowIndicatorTimer() {
@@ -255,10 +323,13 @@ function Guide(options) {
     }
 
     function showLoading() {
+        isLoadingGuide = true;
+        toggleLoadError(false);
         loading.show();
     }
 
     function hideLoading() {
+        isLoadingGuide = false;
         loading.hide();
     }
 
@@ -400,14 +471,14 @@ function Guide(options) {
                 programQuery.Fields = programFields.join(',');
             }
 
-            apiClient.getLiveTvPrograms(programQuery).then(function (programsResult) {
+            return apiClient.getLiveTvPrograms(programQuery).then(function (programsResult) {
                 const guideOptions = { focusProgramOnRender, scrollToTimeMs, focusToTimeMs, startTimeOfDayMs };
 
                 renderGuide(context, date, channelsResult.Items, programsResult.Items, renderOptions, guideOptions, apiClient);
 
                 hideLoading();
             });
-        });
+        }).catch(onGuideLoadError);
     }
 
     function getDisplayTime(date) {
@@ -873,6 +944,8 @@ function Guide(options) {
 
         allChannels = channels;
         allPrograms = programs;
+        lastRenderTimeMs = new Date().getTime();
+        loadRetryIndex = 0;
         currentGridStartMs = date.getTime();
         currentRenderDate = date;
         currentRenderOptions = renderOptions;
@@ -1077,7 +1150,7 @@ function Guide(options) {
 
         apiClient.getLiveTvGuideInfo().then(function (guideInfo) {
             setDateRange(page, guideInfo);
-        });
+        }).catch(onGuideLoadError);
     }
 
     function getSiblingChannelRow(row, forward) {
@@ -1397,6 +1470,11 @@ function Guide(options) {
     });
 
     guideContext.querySelector('.btnGuideJumpToNow').addEventListener('click', scrollToNow);
+
+    guideContext.querySelector('.btnGuideRetry').addEventListener('click', function () {
+        loadRetryIndex = 0;
+        self.refresh();
+    });
 
     updateClock();
     startNowIndicatorTimer();
