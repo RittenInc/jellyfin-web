@@ -5,7 +5,7 @@ import ListItemText from '@mui/material/ListItemText/ListItemText';
 import Menu, { type MenuProps } from '@mui/material/Menu/Menu';
 import MenuItem from '@mui/material/MenuItem/MenuItem';
 import React, { FC } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import LibraryIcon from 'apps/modern/components/LibraryIcon';
 import { appRouter } from 'components/router/appRouter';
@@ -25,8 +25,6 @@ const UserViewsMenu: FC<UserViewsMenuProps> = ({
     onMenuClose,
     ...props
 }) => {
-    const location = useLocation();
-
     return (
         <Menu
             {...props}
@@ -37,8 +35,7 @@ const UserViewsMenu: FC<UserViewsMenuProps> = ({
                 if ('url' in navItem) {
                     const linkProps = isEmbeddedMenuLink(navItem) ? {
                         component: Link,
-                        to: getEmbedPath(navItem),
-                        state: { from: location.pathname + location.search }
+                        to: getEmbedPath(navItem)
                     } : {
                         component: 'a',
                         href: navItem.url,

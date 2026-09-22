@@ -1,12 +1,11 @@
 import ListItemButton, { ListItemButtonBaseProps } from '@mui/material/ListItemButton';
 import React, { FC } from 'react';
-import { Link, type LinkProps, useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
 interface ListItemLinkProps extends ListItemButtonBaseProps {
     to: string
     includePaths?: string[]
     excludePaths?: string[]
-    state?: LinkProps['state']
 }
 
 const isMatchingParams = (routeParams: URLSearchParams, currentParams: URLSearchParams) => {

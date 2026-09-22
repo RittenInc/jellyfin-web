@@ -29,8 +29,6 @@ const MainDrawerContent = () => {
     const userViews = userViewsData?.Items || [];
     const webConfig = useWebConfig();
 
-    const currentPath = location.pathname + location.search;
-
     const isHomeSelected = location.pathname === '/home' && (!location.search || location.search === '?tab=0');
 
     return (
@@ -69,10 +67,7 @@ const MainDrawerContent = () => {
                                 disablePadding
                             >
                                 {isEmbeddedMenuLink(menuLink) ? (
-                                    <ListItemLink
-                                        to={getEmbedPath(menuLink)}
-                                        state={{ from: currentPath }}
-                                    >
+                                    <ListItemLink to={getEmbedPath(menuLink)}>
                                         <ListItemIcon>
                                             <Icon>{menuLink.icon ?? 'link'}</Icon>
                                         </ListItemIcon>

@@ -1,10 +1,12 @@
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import React, { type FC } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { appRouter, PUBLIC_PATHS } from 'components/router/appRouter';
 import BaseToolbar from 'components/toolbar/AppToolbar';
 import ServerButton from 'components/toolbar/ServerButton';
+import { useEmbeddedMenuLink } from 'hooks/useEmbeddedMenuLink';
 
 import RemotePlayButton from './RemotePlayButton';
 import SyncPlayButton from './SyncPlayButton';
@@ -23,6 +25,7 @@ const AppToolbar: FC<AppToolbarProps> = ({
     onDrawerButtonClick
 }) => {
     const location = useLocation();
+    const embeddedMenuLink = useEmbeddedMenuLink();
 
     // The video osd does not show the standard toolbar
     if (location.pathname === '/video') return null;
@@ -49,7 +52,7 @@ const AppToolbar: FC<AppToolbarProps> = ({
             isUserMenuAvailable={!isPublicPath}
             className='padded-left padded-right'
         >
-            {!isDrawerAvailable && (
+            {!isDrawerAvailable ? (
                 <Stack
                     direction='row'
                     spacing={0.5}
@@ -60,6 +63,19 @@ const AppToolbar: FC<AppToolbarProps> = ({
                         <UserViewNav />
                     )}
                 </Stack>
+            ) : (
+                // The drawer replaces the server button and nav on small screens, leaving nothing to
+                // identify an embedded site, so show its name as the page title instead.
+                embeddedMenuLink && (
+                    <Typography
+                        variant='h6'
+                        component='h1'
+                        noWrap
+                        sx={{ minWidth: 0, fontSize: '1.1rem' }}
+                    >
+                        {embeddedMenuLink.name}
+                    </Typography>
+                )
             )}
         </BaseToolbar>
     );
