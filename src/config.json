@@ -37,7 +37,8 @@
     {
       "name": "Request Shows",
       "icon": "playlist_add",
-      "url": "https://requests.ritten.ca/"
+      "url": "https://requests.ritten.ca/",
+      "embed": true
     }
   ],
   "servers": [],

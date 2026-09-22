@@ -20,6 +20,7 @@ import { useApi } from 'hooks/useApi';
 import useCurrentTab from 'hooks/useCurrentTab';
 import { useWebConfig } from 'hooks/useWebConfig';
 import globalize from 'lib/globalize';
+import { getEmbedPath, isEmbeddedMenuLink } from 'utils/menuLinks';
 
 import UserViewsMenu from './UserViewsMenu';
 
@@ -135,6 +136,22 @@ const UserViewNav = () => {
 
             {primaryNavItems?.map(navItem => {
                 if ('url' in navItem) {
+                    if (isEmbeddedMenuLink(navItem)) {
+                        return (
+                            <Button
+                                key={navItem.name}
+                                variant='text'
+                                color={location.pathname === '/embed' ? 'primary' : 'inherit'}
+                                startIcon={<Icon>{navItem.icon || 'link'}</Icon>}
+                                component={Link}
+                                to={getEmbedPath(navItem)}
+                                state={{ from: location.pathname + location.search }}
+                            >
+                                {navItem.name}
+                            </Button>
+                        );
+                    }
+
                     return (
                         <Button
                             key={navItem.name}

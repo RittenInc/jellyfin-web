@@ -44,3 +44,10 @@ $mui-bp-xl: 1536px;
         }
     }
 }
+
+// The embedded external site page fills the available space itself, so the default page padding
+// (which reserves room for the now playing bar) would push the iframe off screen.
+.page.embedPage {
+    padding: 0 !important;
+    overflow: hidden;
+}

@@ -17,6 +17,7 @@ import { useUserViews } from 'hooks/api/useUserViews';
 import { useApi } from 'hooks/useApi';
 import { useWebConfig } from 'hooks/useWebConfig';
 import globalize from 'lib/globalize';
+import { getEmbedPath, isEmbeddedMenuLink } from 'utils/menuLinks';
 
 import LibraryIcon from '../LibraryIcon';
 import DrawerHeaderLink from './DrawerHeaderLink';
@@ -27,6 +28,8 @@ const MainDrawerContent = () => {
     const { data: userViewsData } = useUserViews({ userId: user?.Id });
     const userViews = userViewsData?.Items || [];
     const webConfig = useWebConfig();
+
+    const currentPath = location.pathname + location.search;
 
     const isHomeSelected = location.pathname === '/home' && (!location.search || location.search === '?tab=0');
 
@@ -65,17 +68,29 @@ const MainDrawerContent = () => {
                                 key={`${menuLink.name}_${menuLink.url}`}
                                 disablePadding
                             >
-                                <ListItemButton
-                                    component='a'
-                                    href={menuLink.url}
-                                    target='_blank'
-                                    rel='noopener noreferrer'
-                                >
-                                    <ListItemIcon>
-                                        <Icon>{menuLink.icon ?? 'link'}</Icon>
-                                    </ListItemIcon>
-                                    <ListItemText primary={menuLink.name} />
-                                </ListItemButton>
+                                {isEmbeddedMenuLink(menuLink) ? (
+                                    <ListItemLink
+                                        to={getEmbedPath(menuLink)}
+                                        state={{ from: currentPath }}
+                                    >
+                                        <ListItemIcon>
+                                            <Icon>{menuLink.icon ?? 'link'}</Icon>
+                                        </ListItemIcon>
+                                        <ListItemText primary={menuLink.name} />
+                                    </ListItemLink>
+                                ) : (
+                                    <ListItemButton
+                                        component='a'
+                                        href={menuLink.url}
+                                        target='_blank'
+                                        rel='noopener noreferrer'
+                                    >
+                                        <ListItemIcon>
+                                            <Icon>{menuLink.icon ?? 'link'}</Icon>
+                                        </ListItemIcon>
+                                        <ListItemText primary={menuLink.name} />
+                                    </ListItemButton>
+                                )}
                             </ListItem>
                         ))}
                     </List>

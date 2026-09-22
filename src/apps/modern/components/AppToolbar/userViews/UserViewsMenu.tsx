@@ -5,11 +5,12 @@ import ListItemText from '@mui/material/ListItemText/ListItemText';
 import Menu, { type MenuProps } from '@mui/material/Menu/Menu';
 import MenuItem from '@mui/material/MenuItem/MenuItem';
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import LibraryIcon from 'apps/modern/components/LibraryIcon';
 import { appRouter } from 'components/router/appRouter';
 import type { MenuLink } from 'types/webConfig';
+import { getEmbedPath, isEmbeddedMenuLink } from 'utils/menuLinks';
 
 interface UserViewsMenuProps extends MenuProps {
     userViews: (BaseItemDto | MenuLink)[]
@@ -24,6 +25,8 @@ const UserViewsMenu: FC<UserViewsMenuProps> = ({
     onMenuClose,
     ...props
 }) => {
+    const location = useLocation();
+
     return (
         <Menu
             {...props}
@@ -32,13 +35,21 @@ const UserViewsMenu: FC<UserViewsMenuProps> = ({
         >
             {userViews.map(navItem => {
                 if ('url' in navItem) {
+                    const linkProps = isEmbeddedMenuLink(navItem) ? {
+                        component: Link,
+                        to: getEmbedPath(navItem),
+                        state: { from: location.pathname + location.search }
+                    } : {
+                        component: 'a',
+                        href: navItem.url,
+                        target: '_blank',
+                        rel: 'noopener noreferrer'
+                    };
+
                     return (
                         <MenuItem
                             key={navItem.name}
-                            component='a'
-                            href={navItem.url}
-                            target='_blank'
-                            rel='noopener noreferrer'
+                            {...linkProps}
                             onClick={onMenuClose}
                         >
                             <ListItemIcon>
