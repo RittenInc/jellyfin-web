@@ -7,6 +7,7 @@ import { appRouter, PUBLIC_PATHS } from 'components/router/appRouter';
 import BaseToolbar from 'components/toolbar/AppToolbar';
 import ServerButton from 'components/toolbar/ServerButton';
 import { useEmbeddedMenuLink } from 'hooks/useEmbeddedMenuLink';
+import { EMBED_PATH } from 'utils/menuLinks';
 
 import RemotePlayButton from './RemotePlayButton';
 import SyncPlayButton from './SyncPlayButton';
@@ -30,8 +31,10 @@ const AppToolbar: FC<AppToolbarProps> = ({
     // The video osd does not show the standard toolbar
     if (location.pathname === '/video') return null;
 
-    // Only show the back button in apps when appropriate
-    const isBackButtonAvailable = window.NativeShell && appRouter.canGoBack(location.pathname);
+    // Only show the back button in apps when appropriate. The embed page is excluded since the
+    // framed site adds its own entries to the session history, so back would navigate within it.
+    const isBackButtonAvailable = location.pathname !== EMBED_PATH
+        && window.NativeShell && appRouter.canGoBack(location.pathname);
 
     // Check if the current path is a public path to hide user content
     const isPublicPath = PUBLIC_PATHS.includes(location.pathname);
