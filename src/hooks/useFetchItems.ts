@@ -21,6 +21,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import datetime from 'scripts/datetime';
 
 import { type JellyfinApiContext, useApi } from './useApi';
+import { getDuplicateItems } from 'utils/duplicates';
 import { getAlphaPickerQuery, getFieldsQuery, getFiltersQuery, getLimitQuery } from 'utils/items';
 import { getProgramSections, getSuggestionSections } from 'utils/sections';
 
@@ -186,6 +187,51 @@ export const useGetQueryFilters = (
     });
 };
 
+/**
+ * Duplicates can only be found by looking at the whole library, so every item is fetched and the
+ * duplicates are paged locally.
+ */
+const fetchGetDuplicateItems = async (
+    currentApi: JellyfinApiContext,
+    viewType: LibraryTab,
+    parentId: ParentId,
+    itemType: BaseItemKind[],
+    libraryViewSettings: LibraryViewSettings,
+    options?: AxiosRequestConfig
+): Promise<ItemDtoQueryResult> => {
+    const { api, user } = currentApi;
+    if (!api || !user?.Id) return {};
+
+    const response = await getLibraryApi(api).getItems(
+        {
+            userId: user.Id,
+            recursive: true,
+            imageTypeLimit: 1,
+            parentId: parentId ?? undefined,
+            enableImageTypes: [libraryViewSettings.ImageType, ImageType.Backdrop],
+            ...getFieldsQuery(viewType, libraryViewSettings),
+            ...getFiltersQuery(viewType, libraryViewSettings),
+            ...getAlphaPickerQuery(libraryViewSettings),
+            sortBy: libraryViewSettings.SortBy,
+            sortOrder: [libraryViewSettings.SortOrder],
+            includeItemTypes: itemType
+        },
+        {
+            signal: options?.signal
+        }
+    );
+
+    const duplicates = getDuplicateItems((response.data.Items ?? []) as ItemDto[]);
+    const startIndex = libraryViewSettings.StartIndex;
+    const { limit } = getLimitQuery();
+
+    return {
+        Items: limit ? duplicates.slice(startIndex, startIndex + limit) : duplicates.slice(startIndex),
+        TotalRecordCount: duplicates.length,
+        StartIndex: startIndex
+    };
+};
+
 const fetchGetItemsViewByType = async (
     currentApi: JellyfinApiContext,
     viewType: LibraryTab | undefined,
@@ -328,6 +374,10 @@ const fetchGetItemsViewByType = async (
                 );
                 break;
             default: {
+                if (libraryViewSettings.Filters?.Duplicates && user.Policy?.IsAdministrator) {
+                    return fetchGetDuplicateItems(currentApi, viewType, parentId, itemType, libraryViewSettings, options);
+                }
+
                 response = await getLibraryApi(api).getItems(
                     {
                         userId: user.Id,

@@ -113,6 +113,11 @@ const getItemFieldsEnum = (
         itemFields.push(ItemFields.PrimaryImageAspectRatio);
     }
 
+    if (libraryViewSettings.Filters?.Duplicates) {
+        // Duplicates are matched by provider id
+        itemFields.push(ItemFields.ProviderIds);
+    }
+
     if (viewType === LibraryTab.Studios) {
         itemFields.push(
             ItemFields.DateCreated,

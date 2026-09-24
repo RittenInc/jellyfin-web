@@ -4,6 +4,7 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
+import { useApi } from 'hooks/useApi';
 import globalize from 'lib/globalize';
 import { LibraryViewSettings } from 'types/library';
 import { LibraryTab } from 'types/libraryTab';
@@ -31,6 +32,10 @@ const FiltersStatus: FC<FiltersStatusProps> = ({
     libraryViewSettings,
     setLibraryViewSettings
 }) => {
+    const { user } = useApi();
+    const isDuplicatesFilterVisible = !!user?.Policy?.IsAdministrator
+        && (viewType === LibraryTab.Movies || viewType === LibraryTab.Series);
+
     let statusFiltersOptions = defaultFiltersOptions;
 
     if (viewType === LibraryTab.Books) {
@@ -60,6 +65,21 @@ const FiltersStatus: FC<FiltersStatusProps> = ({
             }));
         },
         [setLibraryViewSettings, libraryViewSettings?.Filters?.Status]
+    );
+
+    const onFiltersDuplicatesChange = useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            event.preventDefault();
+            setLibraryViewSettings((prevState) => ({
+                ...prevState,
+                StartIndex: 0,
+                Filters: {
+                    ...prevState.Filters,
+                    Duplicates: event.target.checked || undefined
+                }
+            }));
+        },
+        [setLibraryViewSettings]
     );
 
     const getVisibleFiltersStatus = () => {
@@ -103,6 +123,17 @@ const FiltersStatus: FC<FiltersStatusProps> = ({
                         label={globalize.translate(filter.label)}
                     />
                 ))}
+            {isDuplicatesFilterVisible && (
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={!!libraryViewSettings?.Filters?.Duplicates}
+                            onChange={onFiltersDuplicatesChange}
+                        />
+                    }
+                    label={globalize.translate('Duplicates')}
+                />
+            )}
         </FormGroup>
     );
 };

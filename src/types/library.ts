@@ -47,6 +47,7 @@ export interface Filters {
     Years?: number[];
     AudioLanguages?: string[];
     SubtitleLanguages?: string[];
+    Duplicates?: boolean;
 }
 
 export enum ViewMode {
