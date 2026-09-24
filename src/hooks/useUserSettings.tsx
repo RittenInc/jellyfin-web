@@ -30,7 +30,7 @@ const UserSettingField = {
     LibraryPageSize: 'libraryPageSize'
 };
 
-const DEFAULT_LIBRARY_PAGE_SIZE = 100;
+const DEFAULT_LIBRARY_PAGE_SIZE = 0;
 
 const UserSettingsContext = createContext<UserSettings>({
     disableCustomCss: false,
