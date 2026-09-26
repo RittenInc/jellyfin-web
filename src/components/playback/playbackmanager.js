@@ -35,6 +35,7 @@ import { OutboundWebSocketMessageType } from '@jellyfin/sdk/lib/websocket';
 import { MediaError } from 'types/mediaError';
 import { getMediaError } from 'utils/mediaError';
 import { bindSkipSegment } from './skipsegment.ts';
+import { getPreferredAudioStreamIndex } from './audioLanguage.ts';
 import * as bitrateTest from 'utils/bitrateTest';
 
 const UNLIMITED_ITEMS = -1;
@@ -2725,6 +2726,14 @@ export class PlaybackManager {
                 if (trackOptions.DefaultAudioStreamIndex != null) {
                     options.audioStreamIndex = trackOptions.DefaultAudioStreamIndex;
                     isIdFallbackNeeded = true;
+                } else if (options.audioStreamIndex == null) {
+                    // The server favours the file's default-flagged track over the preferred
+                    // language, so pick the preferred (or English) track here instead.
+                    const preferredAudioStreamIndex = getPreferredAudioStreamIndex(mediaStreams, user.Configuration.AudioLanguagePreference);
+                    if (preferredAudioStreamIndex != null) {
+                        options.audioStreamIndex = preferredAudioStreamIndex;
+                        isIdFallbackNeeded = true;
+                    }
                 }
                 if (trackOptions.DefaultSubtitleStreamIndex != null) {
                     options.subtitleStreamIndex = trackOptions.DefaultSubtitleStreamIndex;

@@ -22,6 +22,7 @@ import layoutManager from 'components/layoutManager';
 import listView from 'components/listview/listview';
 import loading from 'components/loading/loading';
 import ItemDetailsMetadataList from 'components/itemDetails/ItemDetailsMetadataList';
+import { getPreferredAudioStreamIndex } from 'components/playback/audioLanguage';
 import { playbackManager } from 'components/playback/playbackmanager';
 import { appRouter } from 'components/router/appRouter';
 import itemShortcuts from 'components/shortcuts';
@@ -228,7 +229,7 @@ function renderTrackSelections(page, instance, item, forceReload) {
 
     if (select.value !== currentValue || forceReload) {
         renderVideoSelections(page, mediaSources);
-        renderAudioSelections(page, mediaSources);
+        renderAudioSelections(page, instance, mediaSources);
         renderSubtitleSelections(page, mediaSources);
     }
 }
@@ -267,7 +268,7 @@ function renderVideoSelections(page, mediaSources) {
     }
 }
 
-function renderAudioSelections(page, mediaSources) {
+function renderAudioSelections(page, instance, mediaSources) {
     const mediaSource = getSelectedMediaSource(page, mediaSources);
 
     const tracks = mediaSource.MediaStreams.filter(function (m) {
@@ -276,7 +277,7 @@ function renderAudioSelections(page, mediaSources) {
     tracks.sort(itemHelper.sortTracks);
     const select = page.querySelector('.selectAudio');
     select.setLabel(globalize.translate('Audio'));
-    const selectedId = mediaSource.DefaultAudioStreamIndex;
+    const selectedId = getPreferredAudioStreamIndex(mediaSource.MediaStreams, instance._audioLanguagePreference) ?? mediaSource.DefaultAudioStreamIndex;
     select.innerHTML = tracks.map(function (v) {
         const selected = v.Index === selectedId ? ' selected' : '';
         return '<option value="' + v.Index + '" ' + selected + '>' + v.DisplayTitle + '</option>';
@@ -572,6 +573,7 @@ function reloadFromItem(instance, page, params, item, user) {
     // Render the main information for the item
     renderName(item, page.querySelector('.nameContainer'), params.context);
     renderDetails(page, instance, item, apiClient, params.context);
+    instance._audioLanguagePreference = user?.Configuration?.AudioLanguagePreference;
     renderTrackSelections(page, instance, item);
 
     renderSeriesTimerEditor(page, item, apiClient, user);
@@ -2117,7 +2119,7 @@ export default function (view, params) {
         bindAll(view, '.btnMoreCommands', 'click', onMoreCommandsClick);
         view.querySelector('.selectSource').addEventListener('change', function () {
             renderVideoSelections(view, self._currentPlaybackMediaSources);
-            renderAudioSelections(view, self._currentPlaybackMediaSources);
+            renderAudioSelections(view, self, self._currentPlaybackMediaSources);
             renderSubtitleSelections(view, self._currentPlaybackMediaSources);
             refreshSelectedVersion();
         });
@@ -2190,7 +2192,7 @@ export default function (view, params) {
             currentItem = versionItem;
             reloadFromItem(self, view, params, versionItem, user);
             renderVideoSelections(view, self._currentPlaybackMediaSources);
-            renderAudioSelections(view, self._currentPlaybackMediaSources);
+            renderAudioSelections(view, self, self._currentPlaybackMediaSources);
             renderSubtitleSelections(view, self._currentPlaybackMediaSources);
         }).catch(function (err) {
             console.error('failed to load alternate version item', err);
